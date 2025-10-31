@@ -2,7 +2,6 @@ import { createCanvas } from '@napi-rs/canvas'
 import os from 'os'
 import speed from 'performance-now'
 import { execSync } from 'child_process'
-import uploadImage from '../lib/uploadImage.js' 
 
 const progressBar = (percent, bars = 20) => {
     let filled = Math.round((percent / 100) * bars)
@@ -50,134 +49,103 @@ let handler = async (m, { conn }) => {
   const canvas = createCanvas(width, height)
   const ctx = canvas.getContext('2d')
 
+  const primaryColor = '#00eaff'
+  const secondaryColor = '#005f73'
+  const backgroundColor = '#050a0e'
+
   const gradient = ctx.createLinearGradient(0, 0, 0, height)
-  gradient.addColorStop(0, '#00111f')
+  gradient.addColorStop(0, backgroundColor)
   gradient.addColorStop(1, '#000000')
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, width, height)
 
-  ctx.strokeStyle = 'rgba(0,255,255,0.08)'
-  for (let i = -width; i < width * 2; i += 50) {
+  ctx.strokeStyle = 'rgba(0,234,255,0.15)'
+  for (let i = -width; i < width * 2; i += 70) {
     ctx.beginPath()
     ctx.moveTo(i, 0)
     ctx.lineTo(i - height, height)
     ctx.stroke()
   }
 
-  ctx.strokeStyle = '#00ffff'
-  ctx.shadowColor = '#00ffff'
-  ctx.shadowBlur = 18
-  ctx.lineWidth = 3
-  ctx.strokeRect(40, 40, width - 80, height - 80)
+  ctx.strokeStyle = primaryColor
+  ctx.shadowColor = primaryColor
+  ctx.shadowBlur = 20
+  ctx.lineWidth = 4
+  ctx.strokeRect(30, 30, width - 60, height - 60)
   ctx.shadowBlur = 0
 
-  ctx.fillStyle = '#00ffff'
-  ctx.font = 'bold 48px Sans-serif'
+  ctx.fillStyle = primaryColor
+  ctx.font = 'bold 52px "Arial Black", Sans-serif'
   ctx.textAlign = 'center'
   ctx.fillText('SISTEMA ONLINE', width / 2, 100)
 
-  ctx.fillStyle = 'rgba(0,20,40,0.6)'
-  ctx.fillRect(60, 150, width - 120, 380)
+  ctx.fillStyle = 'rgba(1,10,20,0.8)'
+  ctx.fillRect(50, 140, width - 100, 380)
 
   ctx.textAlign = 'left'
-  ctx.fillStyle = '#ffffff'
-  ctx.font = '26px Sans-serif'
+  ctx.fillStyle = '#f0f0f0'
+  ctx.font = '28px Sans-serif'
+  
+  let y = 190
+  const xTitle = 80
+  const xValue = 320
+  const lineSpacing = 50
 
-  ctx.fillText('LATENCIA', 80, 190)
-
-  ctx.fillText('CPU', 80, 240)
-  ctx.fillStyle = '#00ffff'
-  ctx.fillText(cpuModel, 320, 240)
-
-  ctx.fillStyle = '#ffffff'
-  ctx.fillText('NÚCLEOS', 80, 290)
-  ctx.fillStyle = '#00ffff'
-  ctx.fillText(cores.toString(), 320, 290)
-
-  ctx.fillStyle = '#ffffff'
-  ctx.fillText('MEMORIA', 80, 340)
-  ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB`, 320, 340)
-
-  ctx.fillStyle = '#ffffff'
-  ctx.fillText('UPTIME', 80, 390)
-  ctx.fillStyle = '#00ffff'
-  ctx.fillText(uptimeStr, 320, 390)
-
-  const barWidth = width - 240
-  const ramBarPercent = parseFloat(memPercent) / 100
-  ctx.fillStyle = 'rgba(8,45,51,0.8)'
-  ctx.fillRect(80, 420, barWidth, 25)
-  ctx.fillStyle = '#00ffff'
-  ctx.shadowColor = '#00ffff'
-  ctx.shadowBlur = 12
-  ctx.fillRect(80, 420, barWidth * ramBarPercent, 25)
-  ctx.shadowBlur = 0
-  ctx.fillStyle = '#ffffff'
-  ctx.fillText(`${memPercent}% RAM`, 80 + barWidth + 10, 440)
-
-  const cpuBarPercent = parseFloat(cpuPercent) / 100
-  ctx.fillStyle = 'rgba(8,45,51,0.8)'
-  ctx.fillRect(80, 460, barWidth, 25)
-  ctx.fillStyle = '#00ffff'
-  ctx.shadowColor = '#00ffff'
-  ctx.shadowBlur = 12
-  ctx.fillRect(80, 460, barWidth * cpuBarPercent, 25)
-  ctx.shadowBlur = 0
-  ctx.fillStyle = '#ffffff'
-  ctx.fillText(`${cpuPercent}% CPU`, 80 + barWidth + 10, 480)
-
-  ctx.textAlign = 'center'
-  ctx.fillStyle = 'rgba(255,255,255,0.4)'
-  ctx.font = '14px Sans-serif'
-  ctx.fillText('Mode Systems Monitoring © 2025', width / 2, height - 40)
+  const drawLine = (title, value) => {
+    ctx.fillStyle = '#f0f0f0'
+    ctx.fillText(title, xTitle, y)
+    ctx.fillStyle = primaryColor
+    ctx.fillText(value, xValue, y)
+    y += lineSpacing
+  }
 
   const latensi = speed() - timestamp
 
-  ctx.textAlign = 'left'
-  ctx.font = '26px Sans-serif'
-  ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 190) 
+  drawLine('LATENCIA', `${latensi.toFixed(2)} ms`)
+  drawLine('CPU', cpuModel)
+  drawLine('NÚCLEOS', cores.toString())
+  drawLine('MEMORIA', `${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB`)
+  drawLine('UPTIME', uptimeStr)
+  
+  // Barras
+  const barY = 440
+  const barWidth = width - 240
+  const drawBar = (percent, label, color) => {
+    const barPercent = parseFloat(percent) / 100
+    ctx.fillStyle = secondaryColor
+    ctx.fillRect(xTitle, barY + (label === 'CPU' ? 40 : 0), barWidth, 25)
+    ctx.fillStyle = color
+    ctx.shadowColor = color
+    ctx.shadowBlur = 15
+    ctx.fillRect(xTitle, barY + (label === 'CPU' ? 40 : 0), barWidth * barPercent, 25)
+    ctx.shadowBlur = 0
+    ctx.fillStyle = '#f0f0f0'
+    ctx.font = '22px Sans-serif'
+    ctx.fillText(`${label}: ${percent}%`, xTitle + barWidth + 10, barY + (label === 'CPU' ? 60 : 20))
+  }
+  
+  drawBar(memPercent, 'RAM', primaryColor)
+  drawBar(cpuPercent, 'CPU', primaryColor)
+
+  ctx.textAlign = 'center'
+  ctx.fillStyle = 'rgba(255,255,255,0.4)'
+  ctx.font = '18px Sans-serif'
+  ctx.fillText('Mode Systems Monitoring © 2025', width / 2, height - 40)
 
   const imageBuffer = await canvas.encode('png')
 
   
-  let imageUrl = ''
-  try {
-      imageUrl = await uploadImage(imageBuffer) 
-  } catch (e) {
-      console.error('Error al subir la imagen para la URL:', e)
-      imageUrl = 'https://i.imgur.com/vHq1v3Q.png'
-  }
-
   const caption = `*SISTEMA ONLINE*\n\n` + 
                   `*Latencia:* ${latensi.toFixed(2)} ms\n` +
                   `*CPU:* ${cpuModel}\n` +
                   `*Núcleos:* ${cores}\n` +
                   `*RAM:* ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB (${memPercent}%)\n` +
-                  `*Uptime:* ${uptimeStr}`
+                  `*Disco:* ${diskUsed} GB / ${diskTotal} GB\n` +
+                  `*Uptime:* ${uptimeStr}\n\n` +
+                  `_Modo de envío: Imagen y Texto Plano (Rápido)_`
 
-  const productMessage = {
-    product: {
-      productImage: { url: imageUrl },
-      productId: '99999999',
-      title: 'Sistema de Monitoreo',
-      description: `Tiempo de respuesta: ${latensi.toFixed(2)} ms`,
-      currencyCode: 'USD',
-      priceAmount1000: '0',
-      retailerId: 1677,
-      url: `https://wa.me/${conn.user.jid.split('@')[0]}`,
-      productImageCount: 1
-    },
-    businessOwnerJid: conn.user.jid,
-    caption: caption,
-    title: 'Monitor de Ping y Rendimiento',
-    subtitle: '',
-    footer: `Mode Systems Monitoring © 2025`, 
-    mentions: []
-  }
   
-  await conn.sendMessage(m.chat, productMessage, { quoted: m1 }) 
+  await conn.sendMessage(m.chat, { image: imageBuffer, caption: caption, rcanal }, { quoted: m1 }) 
 }
 
 handler.help = ['ping']
