@@ -23,7 +23,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (botSettings.soloParaJid) return
   if (!m.messageStubType || !m.isGroup) return
   const botname = "Mejor Bot"
-  const urlapi = 'https://i.postimg.cc/y8yzWzjW/1756498087639.jpg'
+  const urlapi = 'https://kirito.my/media/images/36184858_k.jpg'
   const thumb = Buffer.from(await (await fetch(urlapi)).arrayBuffer())
   const fkontak = makeFkontak(thumb, `𝗔𝗖𝗖𝗜𝗢́𝗡 𝗘𝗡 𝗘𝗟 𝗚𝗥𝗨𝗣𝗢`, botname)
   let chat = global.db.data.chats[m.chat]
