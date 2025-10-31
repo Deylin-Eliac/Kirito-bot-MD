@@ -128,7 +128,7 @@ global.packsticker2 = `\n┏━──────━◆◆━──────�
 const res2 = await fetch(img);
     const thumb3 = Buffer.from(await res2.arrayBuffer());
 
-    global.m = {
+    global.m1 = {
       key: { participants: userJid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
       message: {
         locationMessage: {
