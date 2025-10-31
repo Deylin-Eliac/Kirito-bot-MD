@@ -127,8 +127,8 @@ global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJ
       participant: userJid
     };
 
-const res = await fetch(img);
-    const thumb2 = Buffer.from(await res.arrayBuffer());
+const res2 = await fetch(img);
+    const thumb3 = Buffer.from(await res2.arrayBuffer());
     const userJid = m.sender
 
     global.fkontak2 = {
@@ -136,7 +136,7 @@ const res = await fetch(img);
       message: {
         locationMessage: {
           name: botname,
-          jpegThumbnail: thumb2
+          jpegThumbnail: thumb3
         }
       },
       participant: userJid
