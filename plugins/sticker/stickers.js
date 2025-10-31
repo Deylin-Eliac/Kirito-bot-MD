@@ -26,7 +26,6 @@ const averageBrightness = async (buffer) => {
   let count = 0
   for (let x = sx; x < ex; x += Math.max(1, Math.floor((ex - sx) / 20))) {
     for (let y = sy; y < ey; y += Math.max(1, Math.floor((ey - sy) / 20))) {
-      const idx = (y * w + x) << 2
       const { r, g, b } = Jimp.intToRGBA(img.getPixelColor(x, y))
       const brightness = (0.299 * r + 0.587 * g + 0.114 * b)
       total += brightness
@@ -40,11 +39,9 @@ const makeImageWithText = async (buffer, text, textColor) => {
   const image = await Jimp.read(buffer)
   const w = image.bitmap.width
   const h = image.bitmap.height
-  const maxWidth = w - 20
-  const fontSize = Math.max(32, Math.floor(Math.min(w, h) / 10))
-  let font
-  if (textColor === 'white') font = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
-  else font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK)
+  const maxWidth = w - 40
+  const fontSize = Math.min(96, Math.max(48, Math.floor(h / 6)))
+  let font = textColor === 'white' ? await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE) : await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK)
   const lines = []
   const words = String(text || '').split(/\s+/)
   let line = ''
@@ -57,18 +54,18 @@ const makeImageWithText = async (buffer, text, textColor) => {
     } else line = test
   }
   if (line) lines.push(line)
-  const padding = 10
-  const textHeight = lines.length * (Jimp.measureTextHeight(font, 'M', maxWidth) + 6)
+  const padding = 15
+  const textHeight = lines.length * (Jimp.measureTextHeight(font, 'M', maxWidth) + 10)
   const boxHeight = textHeight + padding * 2
-  const boxY = h - boxHeight - 10
-  const box = new Jimp(w, boxHeight, textColor === 'white' ? 0x00000080 : 0xFFFFFF80)
+  const boxY = h - boxHeight - 20
+  const box = new Jimp(w, boxHeight, textColor === 'white' ? 0x00000099 : 0xFFFFFF99)
   image.composite(box, 0, boxY)
   let y = boxY + padding
   for (let ln of lines) {
     const textW = Jimp.measureText(font, ln)
     const x = Math.floor((w - textW) / 2)
     image.print(font, x, y, ln)
-    y += Jimp.measureTextHeight(font, ln, maxWidth) + 6
+    y += Jimp.measureTextHeight(font, ln, maxWidth) + 10
   }
   return await image.getBufferAsync(Jimp.MIME_PNG)
 }
@@ -76,13 +73,13 @@ const makeImageWithText = async (buffer, text, textColor) => {
 const renderVideoWithTextToWebp = async (inputPath, text, textColor) => {
   const outWebp = tmpFile('webp')
   const fontfile = ['/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf','/usr/share/fonts/truetype/freefont/FreeSans.ttf','/Library/Fonts/Arial.ttf'].find(p => fs.existsSync(p)) || ''
-  const safeText = String(text || '').replace(/'/g, "\\'")
+  const safeText = String(text || '').replace(/:/g, '\\:').replace(/'/g, "\\'")
   const colorHex = textColor === 'white' ? 'FFFFFF' : '000000'
   const ffmpegCmd = [
     '-y',
     '-i', `"${inputPath}"`,
     '-vf',
-    `"scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,drawbox=y=ih-120:color=black@0.4:width=iw:height=120:t=max,drawtext=fontfile='${fontfile}':text='${safeText}':fontcolor=#${colorHex}:fontsize=36:x=(w-text_w)/2:y=h-90"`,
+    `"scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,drawbox=y=ih-130:color=black@0.4:width=iw:height=130:t=max,drawtext=fontfile='${fontfile}':text='${safeText}':fontcolor=#${colorHex}:fontsize=42:x=(w-text_w)/2:y=h-95"`,
     '-vcodec', 'libwebp',
     '-lossless', '1',
     '-loop', '0',
@@ -91,7 +88,7 @@ const renderVideoWithTextToWebp = async (inputPath, text, textColor) => {
     '-vsync', '0',
     `"${outWebp}"`
   ].join(' ')
-  execSync(`ffmpeg ${ffmpegCmd}`, { stdio: 'ignore' })
+  execSync(`ffmpeg ${ffmpegCmd}`, { stdio: 'pipe' })
   const data = fs.readFileSync(outWebp)
   try { fs.unlinkSync(outWebp) } catch(e){}
   return data
@@ -108,7 +105,7 @@ let handler = async (m, { conn, args }) => {
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     let txt = args.join(' ') || texto1 + (texto2 ? ' • ' + texto2 : '')
     if (/webp|image|video/g.test(mime) && q.download) {
-      if (/video/.test(mime) && (q.msg || q).seconds > 16) return conn.reply(m.chat, `${emoji} El video no puede durar más de *15 segundos*`, m1, rcanal)
+      if (/video/.test(mime) && (q.msg || q).seconds > 16) return conn.reply(m.chat, `${emoji} El video no puede durar más de *15 segundos*`, m, rcanal)
       const buffer = await q.download()
       await m.react('🕓')
       if (/video/.test(mime)) {
@@ -152,7 +149,7 @@ let handler = async (m, { conn, args }) => {
         await conn.sendFile(m.chat, stiker, 'sticker.webp', '', m)
         await m.react('✅')
       } catch (e) {
-        try { await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: m }) } catch {}
+        try { await conn.sendMessage(m.chat, { sticker: stiker, rcanal }, { quoted: m1 }) } catch {}
       }
     }
   }
