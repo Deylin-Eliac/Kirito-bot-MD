@@ -27,7 +27,7 @@ const makeImageWithText = async (buffer, text, color) => {
   const w = image.bitmap.width
   const h = image.bitmap.height
   const maxWidth = w - 60
-  const font = color === 'white' ? await Jimp.loadFont(Jimp.FONT_SANS_128_WHITE) : await Jimp.loadFont(Jimp.FONT_SANS_128_BLACK)
+  const font = color === 'white' ? await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE) : await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK)
   
   const lines = []
   const words = text.split(/\s+/)
