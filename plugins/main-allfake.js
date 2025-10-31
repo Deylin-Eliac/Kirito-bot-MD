@@ -109,8 +109,6 @@ global.rmr = more.repeat(850)
 global.packsticker = `┏━──────━◆◆━──────━┓\n✰ Usuario: ${nombre}\n⚔✰ Bot: ${botname}\n✰ Fecha: ${fecha}\n✰ Hora: ${tiempo}\n┗━──────━◆◆━──────━┛`;
 global.packsticker2 = `\n┏━──────━◆◆━──────━┓\n👑 Desarrollador: ${dev}\n┗━──────━◆◆━──────━┛`;
 
-//Fakes
-global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJid: `6285600793871-1614953337@g.us` } : {}) }, message: { 'contactMessage': { 'displayName': `${nombre}`, 'vcard': `BEGIN:VCARD\nVERSION:3.0\nN:XL;${nombre},;;;\nFN:${nombre},\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`, 'jpegThumbnail': null, thumbnail: null,sendEphemeral: true}}}
 
     const res = await fetch('https://kirito.my/media/images/95705905_k.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
@@ -130,7 +128,7 @@ global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJ
 const res2 = await fetch(img);
     const thumb3 = Buffer.from(await res2.arrayBuffer());
 
-    global.fkontak2 = {
+    global.fkontak = {
       key: { participants: userJid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
       message: {
         locationMessage: {
