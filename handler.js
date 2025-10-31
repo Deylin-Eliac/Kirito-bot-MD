@@ -5,8 +5,15 @@ import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import ws from 'ws';
+import fetch from 'node-fetch';
 
 const isNumber = x => typeof x === 'number' && !isNaN(x);
+
+async function getLidFromJid(id, connection) {
+    if (id.endsWith('@lid')) return id;
+    const res = await connection.onWhatsApp(id).catch(() => []);
+    return res[0]?.lid || id;
+}
 
 export async function handler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
@@ -22,6 +29,10 @@ export async function handler(chatUpdate) {
     m = smsg(conn, m) || m;
     if (!m) return;
 
+    if (global.db.data == null) {
+        await global.loadDatabase();
+    }
+    
     conn.processedMessages = conn.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
@@ -41,11 +52,8 @@ export async function handler(chatUpdate) {
     }
 
     try {
-        await conn.readMessages([m.key]);
-
-        if (global.db.data == null) {
-            await global.loadDatabase();
-        }
+        // Optimización: No esperar a que el mensaje sea leído aquí.
+        // La lectura o confirmación se maneja de forma asíncrona o por otras funciones del bot.
 
         m.exp = 0;
         m.coin = false;
@@ -87,6 +95,16 @@ export async function handler(chatUpdate) {
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
+        // Asegurar que el usuario esté inicializado para evitar errores en la lógica de permisos
+        if (typeof global.db.data.users[senderJid] !== 'object') global.db.data.users[senderJid] = {};
+        if (user) {
+            if (!('exp' in user) || !isNumber(user.exp)) user.exp = 0;
+            if (!('coin' in user) || !isNumber(user.coin)) user.coin = 0;
+            if (!('muto' in user)) user.muto = false; 
+        } else {
+            global.db.data.users[senderJid] = { exp: 0, coin: 0, muto: false };
+        }
+        
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
         const isOwner = isROwner || m.fromMe;
@@ -95,12 +113,6 @@ export async function handler(chatUpdate) {
         if (!isROwner && opts['self']) return;
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
-
-        async function getLidFromJid(id, connection) {
-            if (id.endsWith('@lid')) return id;
-            const res = await connection.onWhatsApp(id).catch(() => []);
-            return res[0]?.lid || id;
-        }
 
         let senderLid, botLid, botJid, groupMetadata, participants, user2, bot, isRAdmin, isAdmin, isBotAdmin;
 
@@ -176,7 +188,7 @@ export async function handler(chatUpdate) {
 
             if (typeof plugin.before === 'function') {
                 const extraBefore = {
-                    match, conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
+                    match, conn, participants, groupMetadata, user: global.db.data.users[m.sender], isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
                 };
                 if (await plugin.before.call(conn, m, extraBefore)) {
                     continue;
@@ -250,7 +262,7 @@ export async function handler(chatUpdate) {
             m.exp += xp;
 
             const extra = {
-                match, usedPrefix, noPrefix, args, command, text, conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
+                match, usedPrefix, noPrefix, args, command, text, conn, participants, groupMetadata, user: global.db.data.users[m.sender], isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
             };
 
             try {
@@ -296,6 +308,11 @@ export async function handler(chatUpdate) {
                     stat.lastSuccess = now;
                 }
             }
+        }
+        
+        // Optimización: Marcar el mensaje como leído si no hubo error o si la opción lo permite
+        if (conn.readMessages && !m.error && !opts['nyimak']) {
+            conn.readMessages([m.key]).catch(e => console.error(e));
         }
     }
 }
