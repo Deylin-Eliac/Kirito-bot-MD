@@ -105,6 +105,13 @@ global.taguser = '@' + m.sender.split("@s.whatsapp.net")
 var more = String.fromCharCode(8206)
 global.rmr = more.repeat(850)
 
+global.icono = [
+'https://Kirito.my/media/images/1.jpg',
+'https://Kirito.my/media/images/2.jpg',
+'https://Kirito.my/media/images/3.jpg',
+'https://Kirito.my/media/images/4.jpg',
+'https://Kirito.my/media/images/5.jpg'
+].getRandom()
 
 global.packsticker = `┏━──────━◆◆━──────━┓\n✰ Usuario: ${nombre}\n⚔✰ Bot: ${botname}\n✰ Fecha: ${fecha}\n✰ Hora: ${tiempo}\n┗━──────━◆◆━──────━┛`;
 global.packsticker2 = `\n┏━──────━◆◆━──────━┓\n👑 Desarrollador: ${dev}\n┗━──────━◆◆━──────━┛`;
@@ -125,7 +132,7 @@ global.packsticker2 = `\n┏━──────━◆◆━──────�
       participant: userJid
     };
 
-const res2 = await fetch(img);
+const res2 = await fetch(icono);
     const thumb3 = Buffer.from(await res2.arrayBuffer());
 
     global.m1 = {
@@ -143,13 +150,7 @@ const res2 = await fetch(img);
 global.fake = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
 }}, { quoted: m }
 
-global.icono = [
-'https://Kirito.my/media/images/1.jpg',
-'https://Kirito.my/media/images/2.jpg',
-'https://Kirito.my/media/images/3.jpg',
-'https://Kirito.my/media/images/4.jpg',
-'https://Kirito.my/media/images/5.jpg'
-].getRandom()
+
 
 global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '', newsletterName: channelRD.name }, externalAdReply: { title: botname, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), /*sourceUrl: redes,*/ mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
 
