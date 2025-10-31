@@ -127,9 +127,24 @@ global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJ
       participant: userJid
     };
 
+const res = await fetch(img);
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+    const userJid = m.sender
+
+    global.fkontak2 = {
+      key: { participants: userJid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
+      message: {
+        locationMessage: {
+          name: botname,
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: userJid
+    };
+
   
 global.fake = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
-}}, { quoted: m }
+}}, { quoted: fkontak2 }
 
 global.icono = [
 'https://Kirito.my/media/images/1.jpg',
