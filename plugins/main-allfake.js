@@ -141,7 +141,7 @@ const res2 = await fetch(img);
 
   
 global.fake = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
-}}, { quoted: fkontak2 }
+}}, { quoted: m }
 
 global.icono = [
 'https://Kirito.my/media/images/1.jpg',
