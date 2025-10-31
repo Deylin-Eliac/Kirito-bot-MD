@@ -52,8 +52,7 @@ export async function handler(chatUpdate) {
     }
 
     try {
-        // Optimización: No esperar a que el mensaje sea leído aquí.
-        // La lectura o confirmación se maneja de forma asíncrona o por otras funciones del bot.
+        
 
         m.exp = 0;
         m.coin = false;
@@ -95,7 +94,7 @@ export async function handler(chatUpdate) {
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
-        // Asegurar que el usuario esté inicializado para evitar errores en la lógica de permisos
+        
         if (typeof global.db.data.users[senderJid] !== 'object') global.db.data.users[senderJid] = {};
         if (user) {
             if (!('exp' in user) || !isNumber(user.exp)) user.exp = 0;
@@ -218,16 +217,7 @@ export async function handler(chatUpdate) {
                 continue;
             }
 
-            const chatID = m.chat;
-            const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
-            const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag'];
-
-            if (chatID === ID_GRUPO_RESTRINGIDO) {
-                const isComandoPermitido = comandosPermitidos.includes(command);
-                if (!isComandoPermitido) {
-                    continue;
-                }
-            }
+            
 
             if (!isAccept) continue;
 
@@ -310,7 +300,7 @@ export async function handler(chatUpdate) {
             }
         }
         
-        // Optimización: Marcar el mensaje como leído si no hubo error o si la opción lo permite
+        
         if (conn.readMessages && !m.error && !opts['nyimak']) {
             conn.readMessages([m.key]).catch(e => console.error(e));
         }
