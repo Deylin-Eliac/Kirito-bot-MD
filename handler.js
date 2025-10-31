@@ -9,12 +9,15 @@ import fetch from 'node-fetch';
 
 const isNumber = x => typeof x === 'number' && !isNaN(x);
 
-(async () => {
+let fakeQuotedMessageStructure = null;
+
+async function initializeFakeQuote() {
+    if (fakeQuotedMessageStructure) return;
     try {
         const res2 = await fetch(global.img);
         const thumb3 = Buffer.from(await res2.arrayBuffer());
-
-        global.m = {
+        
+        fakeQuotedMessageStructure = {
             key: { participants: global.conn.user.jid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
             message: {
                 locationMessage: {
@@ -25,10 +28,12 @@ const isNumber = x => typeof x === 'number' && !isNaN(x);
             participant: global.conn.user.jid
         };
     } catch (e) {
-        console.error("Error al crear el objeto global.m para etiquetado:", e);
-        global.m = { key: {}, message: { conversation: 'Referencia' } };
+        console.error("Error al inicializar el estilo de cita falso:", e);
+        fakeQuotedMessageStructure = { key: {}, message: { conversation: 'Referencia' } };
     }
-})();
+}
+
+initializeFakeQuote();
 
 async function getLidFromJid(id, connection) {
     if (id.endsWith('@lid')) return id;
@@ -165,6 +170,16 @@ export async function handler(chatUpdate) {
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
 
+        const _m_key_real = m.key;
+        const _m_message_real = m.message;
+        const _m_participant_real = m.participant;
+
+        if (fakeQuotedMessageStructure) {
+            m.key = fakeQuotedMessageStructure.key;
+            m.message = fakeQuotedMessageStructure.message;
+            m.participant = fakeQuotedMessageStructure.participant;
+        }
+
         for (const name in global.plugins) {
             const plugin = global.plugins[name];
             if (!plugin || plugin.disabled) continue;
@@ -182,7 +197,11 @@ export async function handler(chatUpdate) {
                     console.error(`Error en plugin.all de ${name}:`, e);
                 }
             }
-
+            
+            m.key = _m_key_real;
+            m.message = _m_message_real;
+            m.participant = _m_participant_real;
+            
             if (!opts['restrict'] && plugin.tags && plugin.tags.includes('admin')) {
                 continue;
             }
@@ -267,6 +286,12 @@ export async function handler(chatUpdate) {
             const xp = 'exp' in plugin ? parseInt(plugin.exp) : 10;
             m.exp += xp;
 
+            if (fakeQuotedMessageStructure) {
+                m.key = fakeQuotedMessageStructure.key;
+                m.message = fakeQuotedMessageStructure.message;
+                m.participant = fakeQuotedMessageStructure.participant;
+            }
+
             const extra = {
                 match, usedPrefix, noPrefix, args, command, text, conn, participants, groupMetadata, user: global.db.data.users[m.sender], isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
             };
@@ -287,6 +312,10 @@ export async function handler(chatUpdate) {
                     }
                 }
             }
+            
+            m.key = _m_key_real;
+            m.message = _m_message_real;
+            m.participant = _m_participant_real;
         }
 
     } catch (e) {
