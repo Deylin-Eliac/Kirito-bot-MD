@@ -139,7 +139,7 @@ global.icono = [
 'https://Kirito.my/media/images/5.jpg'
 ].getRandom()
 
-global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '', newsletterName: channelRD.name }, externalAdReply: { title: botname, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), /*sourceUrl: redes,*/ mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
+global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '', newsletterName: channelRD.name }, externalAdReply: { title: botname, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), /*sourceUrl: redes,*/ mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
 
 global.rcanal1 = { contextInfo: { isForwarded: true, /*forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '', newsletterName: channelRD.name },*/ externalAdReply: { title: botname, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), /*sourceUrl: redes,*/ mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
 }
