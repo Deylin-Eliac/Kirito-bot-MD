@@ -9,35 +9,6 @@ import fetch from 'node-fetch';
 
 const isNumber = x => typeof x === 'number' && !isNaN(x);
 
-let fakeQuotedMessageStructure = null;
-
-async function initializeFakeQuote() {
-    try {
-        const res2 = await fetch(global.img);
-        const thumb3 = Buffer.from(await res2.arrayBuffer());
-        
-        // Usamos global.conn.user.jid para el participant si está disponible
-        const userJid = global.conn?.user?.jid || '120363029199187391@s.whatsapp.net';
-
-        fakeQuotedMessageStructure = {
-            key: { participants: userJid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
-            message: {
-                locationMessage: {
-                    name: global.botname || 'Bot', 
-                    jpegThumbnail: thumb3
-                }
-            },
-            participant: userJid
-        };
-    } catch (e) {
-        console.error("Error al inicializar el estilo de cita falso:", e);
-        fakeQuotedMessageStructure = { key: {}, message: { conversation: 'Referencia' } };
-    }
-}
-
-// Inicializar la estructura de cita al cargar
-if (global.img) initializeFakeQuote();
-
 async function getLidFromJid(id, connection) {
     if (id.endsWith('@lid')) return id;
     const res = await connection.onWhatsApp(id).catch(() => []);
@@ -47,9 +18,6 @@ async function getLidFromJid(id, connection) {
 export async function handler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
     const conn = this;
-
-    // Asegurar que la estructura esté inicializada si global.conn no estaba disponible antes
-    if (!fakeQuotedMessageStructure && global.img && global.conn) await initializeFakeQuote();
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
@@ -64,7 +32,7 @@ export async function handler(chatUpdate) {
     if (global.db.data == null) {
         await global.loadDatabase();
     }
-
+    
     conn.processedMessages = conn.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
@@ -84,6 +52,8 @@ export async function handler(chatUpdate) {
     }
 
     try {
+        
+
         m.exp = 0;
         m.coin = false;
 
@@ -124,6 +94,7 @@ export async function handler(chatUpdate) {
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
+        
         if (typeof global.db.data.users[senderJid] !== 'object') global.db.data.users[senderJid] = {};
         if (user) {
             if (!('exp' in user) || !isNumber(user.exp)) user.exp = 0;
@@ -132,7 +103,7 @@ export async function handler(chatUpdate) {
         } else {
             global.db.data.users[senderJid] = { exp: 0, coin: 0, muto: false };
         }
-
+        
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
         const isOwner = isROwner || m.fromMe;
@@ -176,20 +147,12 @@ export async function handler(chatUpdate) {
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
 
-        // Guardamos la estructura real del mensaje entrante 'm'
-        const _m_key_real = m.key;
-        const _m_message_real = m.message;
-        const _m_participant_real = m.participant;
-
-
         for (const name in global.plugins) {
             const plugin = global.plugins[name];
             if (!plugin || plugin.disabled) continue;
 
             const __filename = join(___dirname, name);
 
-            // Inyeccion para plugin.all (solo si el plugin no cita el mensaje)
-            // Si el plugin.all cita, lo hará con el mensaje real. No lo inyectaremos aquí para evitar errores.
             if (typeof plugin.all === 'function') {
                 try {
                     await plugin.all.call(conn, m, {
@@ -201,7 +164,7 @@ export async function handler(chatUpdate) {
                     console.error(`Error en plugin.all de ${name}:`, e);
                 }
             }
-            
+
             if (!opts['restrict'] && plugin.tags && plugin.tags.includes('admin')) {
                 continue;
             }
@@ -254,6 +217,8 @@ export async function handler(chatUpdate) {
                 continue;
             }
 
+            
+
             if (!isAccept) continue;
 
             m.plugin = name;
@@ -286,14 +251,6 @@ export async function handler(chatUpdate) {
             const xp = 'exp' in plugin ? parseInt(plugin.exp) : 10;
             m.exp += xp;
 
-            // ***** INYECCIÓN DE CITA FAKE AQUI *****
-            if (fakeQuotedMessageStructure) {
-                m.key = fakeQuotedMessageStructure.key;
-                m.message = fakeQuotedMessageStructure.message;
-                m.participant = fakeQuotedMessageStructure.participant;
-            }
-            // ***************************************
-
             const extra = {
                 match, usedPrefix, noPrefix, args, command, text, conn, participants, groupMetadata, user: global.db.data.users[m.sender], isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
             };
@@ -304,8 +261,7 @@ export async function handler(chatUpdate) {
                 m.error = e;
                 console.error(`Error de ejecución en plugin ${name}:`, e);
                 const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys).join('|'), 'g'), 'Administrador');
-                // Al fallar, usamos la inyección para el mensaje de error también
-                conn.reply(m.chat, errorText, m);
+                m.reply(errorText);
             } finally {
                 if (typeof plugin.after === 'function') {
                     try {
@@ -315,12 +271,6 @@ export async function handler(chatUpdate) {
                     }
                 }
             }
-            
-            // ***** RESTAURACIÓN DEL MENSAJE REAL AQUI *****
-            m.key = _m_key_real;
-            m.message = _m_message_real;
-            m.participant = _m_participant_real;
-            // **********************************************
         }
 
     } catch (e) {
@@ -349,7 +299,8 @@ export async function handler(chatUpdate) {
                 }
             }
         }
-
+        
+        
         if (conn.readMessages && !m.error && !opts['nyimak']) {
             conn.readMessages([m.key]).catch(e => console.error(e));
         }
