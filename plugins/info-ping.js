@@ -147,7 +147,7 @@ let handler = async (m, { conn }) => {
     mentions: []
   }
 
-  await conn.sendMessage(m.chat, productMessage, { quoted: m })
+  await conn.sendMessage(m.chat, productMessage, { quoted: m1 })
 }
 
 handler.help = ['ping']
