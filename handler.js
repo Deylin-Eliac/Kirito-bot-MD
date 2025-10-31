@@ -9,6 +9,27 @@ import fetch from 'node-fetch';
 
 const isNumber = x => typeof x === 'number' && !isNaN(x);
 
+(async () => {
+    try {
+        const res2 = await fetch(global.img);
+        const thumb3 = Buffer.from(await res2.arrayBuffer());
+
+        global.m = {
+            key: { participants: global.conn.user.jid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
+            message: {
+                locationMessage: {
+                    name: global.botname || 'Bot', 
+                    jpegThumbnail: thumb3
+                }
+            },
+            participant: global.conn.user.jid
+        };
+    } catch (e) {
+        console.error("Error al crear el objeto global.m para etiquetado:", e);
+        global.m = { key: {}, message: { conversation: 'Referencia' } };
+    }
+})();
+
 async function getLidFromJid(id, connection) {
     if (id.endsWith('@lid')) return id;
     const res = await connection.onWhatsApp(id).catch(() => []);
@@ -32,7 +53,7 @@ export async function handler(chatUpdate) {
     if (global.db.data == null) {
         await global.loadDatabase();
     }
-    
+
     conn.processedMessages = conn.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
@@ -52,8 +73,6 @@ export async function handler(chatUpdate) {
     }
 
     try {
-        
-
         m.exp = 0;
         m.coin = false;
 
@@ -94,7 +113,6 @@ export async function handler(chatUpdate) {
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
-        
         if (typeof global.db.data.users[senderJid] !== 'object') global.db.data.users[senderJid] = {};
         if (user) {
             if (!('exp' in user) || !isNumber(user.exp)) user.exp = 0;
@@ -103,7 +121,7 @@ export async function handler(chatUpdate) {
         } else {
             global.db.data.users[senderJid] = { exp: 0, coin: 0, muto: false };
         }
-        
+
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
         const isOwner = isROwner || m.fromMe;
@@ -217,8 +235,6 @@ export async function handler(chatUpdate) {
                 continue;
             }
 
-            
-
             if (!isAccept) continue;
 
             m.plugin = name;
@@ -261,7 +277,7 @@ export async function handler(chatUpdate) {
                 m.error = e;
                 console.error(`Error de ejecución en plugin ${name}:`, e);
                 const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys).join('|'), 'g'), 'Administrador');
-                m.reply(errorText);
+                conn.reply(m.chat, errorText, m);
             } finally {
                 if (typeof plugin.after === 'function') {
                     try {
@@ -299,8 +315,7 @@ export async function handler(chatUpdate) {
                 }
             }
         }
-        
-        
+
         if (conn.readMessages && !m.error && !opts['nyimak']) {
             conn.readMessages([m.key]).catch(e => console.error(e));
         }
