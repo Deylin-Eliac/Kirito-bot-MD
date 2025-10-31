@@ -1,19 +1,50 @@
 import { createCanvas } from '@napi-rs/canvas'
 import os from 'os'
 import speed from 'performance-now'
+import { execSync } from 'child_process'
+import uploadImage from '../lib/uploadImage.js' 
 
- import uploadImage from '../lib/uploadImage.js' 
+const progressBar = (percent, bars = 20) => {
+    let filled = Math.round((percent / 100) * bars)
+    let empty = bars - filled
+    return '█'.repeat(filled) + '░'.repeat(empty)
+}
 
 let handler = async (m, { conn }) => {
   const timestamp = speed()
-
-  const cpu = os.cpus()[0].model
-  const cores = os.cpus().length
+  
+  const cpus = os.cpus()
+  const cpuModel = cpus[0].model
+  const cores = cpus.length
+  
+  let totalLoad = 0
+  for (let cpu of cpus) {
+    const times = cpu.times
+    const load = (times.user + times.nice + times.sys) / (times.user + times.nice + times.sys + times.idle)
+    totalLoad += load
+  }
+  const cpuPercent = ((totalLoad / cores) * 100).toFixed(2)
+  
   const totalMem = os.totalmem() / 1024 / 1024 / 1024
   const freeMem = os.freemem() / 1024 / 1024 / 1024
   const usedMem = totalMem - freeMem
-  const uptime = (os.uptime() / 3600).toFixed(1)
+  const memPercent = ((usedMem / totalMem) * 100).toFixed(2)
 
+  const uptimeMs = process.uptime() * 1000
+  const h = Math.floor(uptimeMs / 3600000)
+  const mnt = Math.floor((uptimeMs % 3600000) / 60000)
+  const s = Math.floor((uptimeMs % 60000) / 1000)
+  const uptimeStr = `${h}h ${mnt}m ${s}s`
+  
+  let diskUsed = 0, diskTotal = 0
+  try {
+      const df = execSync('df -BG /').toString().split('\n')[1]
+      diskTotal = parseInt(df.split(/\s+/)[1].replace('G',''))
+      diskUsed = parseInt(df.split(/\s+/)[2].replace('G',''))
+  } catch(e) {
+      
+  }
+  
   const width = 1000
   const height = 600
   const canvas = createCanvas(width, height)
@@ -51,12 +82,12 @@ let handler = async (m, { conn }) => {
   ctx.textAlign = 'left'
   ctx.fillStyle = '#ffffff'
   ctx.font = '26px Sans-serif'
-  
+
   ctx.fillText('LATENCIA', 80, 190)
 
   ctx.fillText('CPU', 80, 240)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(cpu, 320, 240)
+  ctx.fillText(cpuModel, 320, 240)
 
   ctx.fillStyle = '#ffffff'
   ctx.fillText('NÚCLEOS', 80, 290)
@@ -71,27 +102,30 @@ let handler = async (m, { conn }) => {
   ctx.fillStyle = '#ffffff'
   ctx.fillText('UPTIME', 80, 390)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${uptime} hrs`, 320, 390)
+  ctx.fillText(uptimeStr, 320, 390)
 
-  const ramBarWidth = width - 240
-  const ramPercent = usedMem / totalMem
+  const barWidth = width - 240
+  const ramBarPercent = parseFloat(memPercent) / 100
   ctx.fillStyle = 'rgba(8,45,51,0.8)'
-  ctx.fillRect(80, 420, ramBarWidth, 25)
+  ctx.fillRect(80, 420, barWidth, 25)
   ctx.fillStyle = '#00ffff'
   ctx.shadowColor = '#00ffff'
   ctx.shadowBlur = 12
-  ctx.fillRect(80, 420, ramBarWidth * ramPercent, 25)
+  ctx.fillRect(80, 420, barWidth * ramBarPercent, 25)
   ctx.shadowBlur = 0
+  ctx.fillStyle = '#ffffff'
+  ctx.fillText(`${memPercent}% RAM`, 80 + barWidth + 10, 440)
 
-  const cpuBarWidth = width - 240
-  const cpuPercent = Math.min(0.6 + Math.random() * 0.3, 1)
+  const cpuBarPercent = parseFloat(cpuPercent) / 100
   ctx.fillStyle = 'rgba(8,45,51,0.8)'
-  ctx.fillRect(80, 460, cpuBarWidth, 25)
+  ctx.fillRect(80, 460, barWidth, 25)
   ctx.fillStyle = '#00ffff'
   ctx.shadowColor = '#00ffff'
   ctx.shadowBlur = 12
-  ctx.fillRect(80, 460, cpuBarWidth * cpuPercent, 25)
+  ctx.fillRect(80, 460, barWidth * cpuBarPercent, 25)
   ctx.shadowBlur = 0
+  ctx.fillStyle = '#ffffff'
+  ctx.fillText(`${cpuPercent}% CPU`, 80 + barWidth + 10, 480)
 
   ctx.textAlign = 'center'
   ctx.fillStyle = 'rgba(255,255,255,0.4)'
@@ -106,26 +140,22 @@ let handler = async (m, { conn }) => {
   ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 190) 
 
   const imageBuffer = await canvas.encode('png')
-  
-  
 
+  
   let imageUrl = ''
   try {
-      
-      
       imageUrl = await uploadImage(imageBuffer) 
   } catch (e) {
-      console.error('Error al subir la imagen para la URL del producto:', e)
-      imageUrl = 'https://i.imgur.com/vHq1v3Q.png' 
+      console.error('Error al subir la imagen para la URL:', e)
+      imageUrl = 'https://i.imgur.com/vHq1v3Q.png'
   }
-
 
   const caption = `*SISTEMA ONLINE*\n\n` + 
                   `*Latencia:* ${latensi.toFixed(2)} ms\n` +
-                  `*CPU:* ${cpu}\n` +
+                  `*CPU:* ${cpuModel}\n` +
                   `*Núcleos:* ${cores}\n` +
-                  `*RAM:* ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB\n` +
-                  `*Uptime:* ${uptime} hrs`
+                  `*RAM:* ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB (${memPercent}%)\n` +
+                  `*Uptime:* ${uptimeStr}`
 
   const productMessage = {
     product: {
@@ -143,11 +173,11 @@ let handler = async (m, { conn }) => {
     caption: caption,
     title: 'Monitor de Ping y Rendimiento',
     subtitle: '',
-    footer: `${caption}\n\nMode Systems Monitoring © 2025`,
+    footer: `Mode Systems Monitoring © 2025`, 
     mentions: []
   }
-
-  await conn.sendMessage(m.chat, productMessage, { quoted: m1 })
+  
+  await conn.sendMessage(m.chat, productMessage, { quoted: m1 }) 
 }
 
 handler.help = ['ping']
