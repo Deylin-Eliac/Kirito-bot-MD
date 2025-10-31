@@ -1,8 +1,9 @@
 import { sticker } from '../../lib/sticker.js'
+import { webp2png } from '../../lib/webp2mp4.js'
 import Jimp from 'jimp'
 import fs from 'fs'
-import path from 'path'
 import os from 'os'
+import path from 'path'
 
 const isUrl = (text) => text && text.match(/https?:\/\/[^\s]+/i)
 
@@ -66,7 +67,10 @@ let handler = async (m, { conn, args }) => {
     let buffer
 
     if (m.quoted && /sticker/.test(q.mtype)) {
-      buffer = await q.download()
+      const webpBuffer = await q.download()
+      const pngUrl = await webp2png(webpBuffer)
+      const res = await fetch(pngUrl)
+      buffer = Buffer.from(await res.arrayBuffer())
     } else if (/image/.test(mime)) {
       buffer = await q.download()
     } else if (args[0] && isUrl(args[0])) {
