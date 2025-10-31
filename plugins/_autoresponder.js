@@ -7,7 +7,7 @@ handler.all = async function (m, { conn }) {
   let user = global.db.data.users[m.sender]
   let chat = global.db.data.chats[m.chat]
 
-const res = await fetch('https://i.postimg.cc/Xv1QwhGc/1756438880305.jpg');
+const res = await fetch('https://kirito.my/media/images/87411733_k.jpg');
   const thumb2 = Buffer.from(await res.arrayBuffer());
 const userJid = m.sender;
 
