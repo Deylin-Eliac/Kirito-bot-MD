@@ -37,12 +37,12 @@ export async function before(m, { conn, participants, groupMetadata }) {
   try {
     avatar = await conn.profilePictureUrl(who, 'image')
   } catch {
-    avatar = img
+    avatar = 'https://kirito.my/media/images/78139889_k.jpg'
   }
 
   const fondo = tipo.includes('Bienvenida')
-    ? img
-    : img
+    ? 'https://kirito.my/media/images/78139889_k.jpg'
+    : 'https://kirito.my/media/images/78139889_k.jpg'
 
   const textoTarjeta = `
 「 ━━━━━━ 🌟 ━━━━━━ 」
