@@ -72,13 +72,13 @@ global.wait = '✪ Espera un momento, soy lento...';
 var canal = 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'  
 let canal2 = 'https://whatsapp.com/channel/0029VayQwPsFnSzESZJ9Us3z'
 var git = 'https://github.com/deylin-eliac'
-var github = 'https://github.com/deylin-eliac/Naruto-Bot-MD' 
+var github = 'https://github.com/deylin-eliac/kirito-bot-md' 
 let correo = 'deylibaquedano801@gmail.com'
 
 global.redes = [canal, canal2, git, github, correo].getRandom()
 
 global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["𝐊𝐢𝐫𝐢𝐭𝐨-𝐁𝐨𝐭 𝐌𝐃 ✦ ᴜɴᴇᴛᴇ ᴀʟ ᴄᴀɴᴀʟ.", "𝕂𝕚𝕣𝕚𝕥𝕠-𝔹𝕠𝕥 𝕄𝔻 - 𝚞𝚗𝚎𝚝𝚎 𝚊𝚕 𝚌𝚊𝚗𝚊𝚕."]
+global.canalNombreM = ["🎄𝐊𝐢𝐫𝐢𝐭𝐨-𝐁𝐨𝐭 𝐌𝐃 ✦ ᴜɴᴇᴛᴇ ᴀʟ ᴄᴀɴᴀʟ ⛄.", "🦌𝕂𝕚𝕣𝕚𝕥𝕠-𝔹𝕠𝕥 𝕄𝔻 - 𝚞𝚗𝚎𝚝𝚎 𝚊𝚕 𝚌𝚊𝚗𝚊𝚕.⛄"]
 global.channelRD = await getRandomChannel()
 
 //• ↳ ◜𝑻𝑰𝑬𝑴𝑷𝑶 𝑹𝑷𝑮◞ • ⚔
