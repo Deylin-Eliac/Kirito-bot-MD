@@ -1,87 +1,107 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
+import fetch from 'node-fetch'
+
+const frasesBienvenida = [
+  "Nos alegra tenerte con nosotros, disfruta tu estadía",
+  "Prepárate para compartir momentos increíbles",
+  "Bienvenido, que tu energía positiva contagie al grupo",
+  "Que tu presencia haga este grupo más fuerte",
+  "Estamos felices de que te unas a nuestra comunidad",
+  "Nuevo integrante, nuevas aventuras por vivir",
+  "Tu participación será muy valiosa, bienvenido",
+  "Esperamos que encuentres apoyo y diversión aquí",
+  "Que cada mensaje tuyo sume alegría al grupo",
+  "Bienvenido, este es un espacio de colaboración y respeto"
+]
+
+const frasesDespedida = [
+  "Nos entristece verte partir, que te vaya bien",
+  "Gracias por tu tiempo con nosotros, hasta luego",
+  "Tu energía hará falta, hasta pronto",
+  "Que encuentres nuevos caminos llenos de éxitos",
+  "Esperamos verte de nuevo en otra ocasión",
+  "Se va un miembro valioso, buen viaje",
+  "Nos dejas un vacío, cuídate mucho",
+  "Hasta la próxima, que todo te vaya excelente",
+  "Tu participación siempre será recordada",
+  "Despedirse es difícil, pero los recuerdos quedan"
+]
 
 export async function before(m, { conn, participants, groupMetadata }) {
+  let botSettings = global.db.data.settings[conn.user.jid] || {}
+  if (botSettings.soloParaJid) return
   if (!m.messageStubType || !m.isGroup) return true
+
+  const totalMembers = participants.length
+  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
+  const user = participants.find(p => p.jid === who)
+  const userName = user?.notify || ''
+  const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
 
-  const tipo =
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD ? '👑 𝑩𝒊𝒆𝒏𝒗𝒆𝒏𝒊𝒅𝒂 𝑺𝒐𝒍𝒆𝒎𝒏𝒆 👑' :
-    (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) ? '🥀 𝑫𝒆𝒔𝒑𝒆𝒅𝒊𝒅𝒂 𝑯𝒐𝒏𝒐𝒓𝒂𝒃𝒍𝒆 🥀' :
-    null
+  let tipo = ''
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós'
   if (!tipo) return
 
-  const frasesBienvenida = [
-    "¡Una nueva leyenda se une a nuestras filas! Que tu camino esté lleno de éxitos. ✨",
-    "El escenario está listo para ti. ¡Prepárate para brillar y compartir momentos geniales! 🌟",
-    "Un miembro valioso se suma. Te damos la más cálida y entusiasta bienvenida. 🥂"
-  ]
-  const frasesDespedida = [
-    "Nos despedimos de un compañero inolvidable. El recuerdo de tu tiempo aquí permanece. 👋",
-    "Toda despedida es un nuevo comienzo. Gracias por tu contribución, ¡te deseamos lo mejor! 🌠",
-    "Se va una parte de la familia. Tu huella es imborrable. ¡Vuelve pronto, amigo! 🕊️"
-  ]
-  const frase = tipo.includes('Bienvenida')
-    ? frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
-    : frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
-
-  const taguser = `@${who.split('@')[0]}`
-  const total = participants.length
-  const grupo = groupMetadata.subject
-  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
+  const tipo2 = global.img || ''
 
   let avatar
   try {
     avatar = await conn.profilePictureUrl(who, 'image')
   } catch {
-    avatar = 'https://kirito.my/media/images/78139889_k.jpg'
+    avatar = tipo2
   }
 
-  const fondo = tipo.includes('Bienvenida')
-    ? 'https://kirito.my/media/images/78139889_k.jpg'
-    : 'https://kirito.my/media/images/78139889_k.jpg'
+  const fraseAleatoria = tipo === 'Bienvenido' 
+    ? frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
+    : frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
 
-  const textoTarjeta = `
-「 ━━━━━━ 🌟 ━━━━━━ 」
-       ${tipo}
-「 ━━━━━━ 🌟 ━━━━━━ 」
+  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome3?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(fraseAleatoria)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
 
-╭┈─────────────── •
-┊ •• 👤 𝐔𝐬𝐮𝐚𝐫𝐢𝐨: ${taguser}
-┊ •• 🌐 𝐆𝐫𝐮𝐩𝐨: ${grupo}
-┊ •• 👥 𝐌𝐢𝐞𝐦𝐛𝐫𝐨𝐬: ${total}
-┊ •• 🗓️ 𝐅𝐞𝐜𝐡𝐚: ${date}
-╰┈─────────────── •
-
-"${frase}"
-
-━━━━━━ 🤖 ━━━━━━
-✨ 𝑷𝒐𝒘𝒆𝒓𝒆𝒅 𝒃𝒚 𝑲𝒊𝒓𝒊𝒕𝒐-𝑩𝒐𝒕-𝑴𝑫 ✨
-`.trim()
-
-  await conn.sendMessage(m.chat, {
-    text: textoTarjeta,
-    mentions: [who],
-    contextInfo: {
-      mentionedJid: [who],
-      externalAdReply: {
-        title: tipo.includes('Bienvenida') ? '🎉 ¡Nuevo Miembro! ¡Bienvenido/a! 🎉' : '💔 ¡Un Adiós! ¡Mucha Suerte! 💔',
-        body: frase.length > 30 ? frase.substring(0, 30) + '...' : frase,
-        thumbnailUrl: avatar,
-        mediaUrl: fondo,
-        sourceUrl: 'https://deylin.xyz/',
-        mediaType: 1,
-        renderLargerThumbnail: true,
-        showAdAttribution: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363322161441595@newsletter',
-          newsletterName: '✰ Kirito-Bot Oficial ✰',
-          serverMessageId: -1
-        }
-      }
+  let fkontak
+  try {
+    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
+    const img3 = Buffer.from(await res2.arrayBuffer())
+    fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
+  } catch (e) {
+    console.error(e)
+  }
+
+  const groupSubject = groupMetadata.subject
+  const jid = m.chat
+  const number = who.split('@')[0]
+
+  const productMessage = {
+    product: {
+      productImage: { url: urlapi },
+      productId: '2452968910',
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: '',
+      currencyCode: 'USD',
+      priceAmount1000: '0',
+      retailerId: 1677,
+      url: `https://deylin.xyz/#sitio_web_del_creador`,
+      productImageCount: 1
+    },
+    businessOwnerJid: who || '0@s.whatsapp.net',
+    caption: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
+    title: 'gati',
+    subtitle: '',
+    footer: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`,
+    mentions: who ? [who] : []
+  }
+
+  const mentionId = who ? [who] : []
+  await conn.sendMessage(jid, productMessage, {
+    quoted: fkontak,
+    contextInfo: { mentionedJid: mentionId }
   })
 }
