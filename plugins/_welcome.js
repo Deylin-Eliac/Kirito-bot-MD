@@ -1,4 +1,4 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
+import { WAMessageStubType, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 const frasesBienvenida = [
@@ -28,80 +28,92 @@ const frasesDespedida = [
 ]
 
 export async function before(m, { conn, participants, groupMetadata }) {
-  let botSettings = global.db.data.settings[conn.user.jid] || {}
-  if (botSettings.soloParaJid) return
   if (!m.messageStubType || !m.isGroup) return true
-
-  const totalMembers = participants.length
-  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
-  const user = participants.find(p => p.jid === who)
-  const userName = user?.notify || ''
-  const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
 
-  let tipo = ''
-  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
-  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós'
+  const tipo = 
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD ? 'Bienvenido 🎉' :
+    (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) ? 'Despedida 👋' :
+    null
+
   if (!tipo) return
 
-  const tipo2 = global.img || ''
+  const frase = tipo.includes('Bienvenido')
+    ? frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
+    : frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
+
+  const taguser = `@${who.split('@')[0]}`
+  const total = participants.length
+  const grupo = groupMetadata.subject
+  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
 
   let avatar
   try {
     avatar = await conn.profilePictureUrl(who, 'image')
   } catch {
-    avatar = tipo2
+    avatar = 'https://i.postimg.cc/Gm9jRysW/default-avatar.png'
   }
 
-  const fraseAleatoria = tipo === 'Bienvenido' 
-    ? frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
-    : frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
+  const fondo = tipo.includes('Bienvenido')
+    ? 'https://i.postimg.cc/0yGwZ9Gy/welcome-bg.jpg'
+    : 'https://i.postimg.cc/BvccvPC8/bye-bg.jpg'
 
-  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome3?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(fraseAleatoria)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+  const imgUrl = `https://canvas-8zhi.onrender.com/api/welcome3?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(frase)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(fondo)}`
 
-  let fkontak
-  try {
-    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
-    const img3 = Buffer.from(await res2.arrayBuffer())
-    fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
+  // Crear mensaje decorativo tipo template interactivo
+  const templateMessage = generateWAMessageFromContent(m.chat, {
+    viewOnceMessage: {
+      message: {
+        interactiveMessage: proto.Message.InteractiveMessage.create({
+          header: {
+            title: tipo,
+            subtitle: grupo,
+            hasMediaAttachment: true,
+            ...(await conn.prepareMessageMedia({ image: { url: imgUrl } }, { upload: conn.waUploadToServer }))
+          },
+          body: {
+            text: `✰ Usuario: ${taguser}\n✎ Fecha: ${date}\n✎ Miembros: ${total}`
+          },
+          footer: {
+            text: "✨ Powered by Kirito-Bot-MD"
+          },
+          nativeFlowMessage: {
+            buttons: [
+              {
+                name: "cta_copy",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "💖 Bienvenido",
+                  copy_code: grupo
+                })
+              },
+              {
+                name: "cta_url",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "📢 Canal Oficial",
+                  url: "https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o"
+                })
+              }
+            ]
+          },
+          contextInfo: {
+            mentionedJid: [who],
+            externalAdReply: {
+              title: tipo,
+              body: frase,
+              thumbnailUrl: imgUrl,
+              sourceUrl: "https://deylin.xyz/",
+              mediaType: 1,
+              renderLargerThumbnail: true
+            }
+          }
+        })
+      }
     }
-  } catch (e) {
-    console.error(e)
-  }
+  }, {})
 
-  const groupSubject = groupMetadata.subject
-  const jid = m.chat
-  const number = who.split('@')[0]
-
-  const productMessage = {
-    product: {
-      productImage: { url: urlapi },
-      productId: '2452968910',
-      title: `${tipo}, ahora somos ${totalMembers}`,
-      description: '',
-      currencyCode: 'USD',
-      priceAmount1000: '0',
-      retailerId: 1677,
-      url: `https://deylin.xyz/#sitio_web_del_creador`,
-      productImageCount: 1
-    },
-    businessOwnerJid: who || '0@s.whatsapp.net',
-    caption: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
-    title: 'gati',
-    subtitle: '',
-    footer: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`,
-    mentions: who ? [who] : []
-  }
-
-  const mentionId = who ? [who] : []
-  await conn.sendMessage(jid, productMessage, {
-    quoted: fkontak,
-    contextInfo: { mentionedJid: mentionId }
-  })
+  await conn.relayMessage(m.chat, templateMessage.message, { messageId: templateMessage.key.id })
 }
