@@ -19,8 +19,16 @@ await m.reply(`⚠️  [SYS-ERR] ${global.emoji} ${global.botname} detectó un e
 console.log(e);
 }
 
-// Obtener la lista de subbots activos una sola vez
 const activeSubBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
+
+const loadingStates = [
+    '□□□□□ 0%',
+    '■□□□□ 20%',
+    '■■□□□ 40%',
+    '■■■□□ 60%',
+    '■■■■□ 80%',
+    '■■■■■ 100%'
+];
 
 switch (true) {       
 
@@ -148,7 +156,7 @@ if (isNaN(botIndex) || botIndex < 1 || botIndex > activeSubBots.length) {
 return m.reply(`💡 Uso: ${usedPrefix + command} <número_de_la_lista>\n\nEjemplo: ${usedPrefix + command} 1\n\n> Usa *${usedPrefix}bots* para ver la lista de números.`);
 }
 
-const targetSubBotConn = activeSubBots[botIndex - 1]; // Obtener la conexión por el índice
+const targetSubBotConn = activeSubBots[botIndex - 1];
 const targetNumberRaw = targetSubBotConn.user.jid.replace(/[^0-9]/g, '');
 
 const subBotSessionPath = join(global.rutaJadiBot || `./${global.jadi}`, targetNumberRaw);
@@ -158,23 +166,37 @@ if (!existsSync(subBotSessionPath)) {
 return m.reply(`❌ La sesión del subbot *+${targetNumberRaw}* no existe en ${subBotSessionPath}.`);
 }
 
-await m.reply(`⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...\n\n1. Eliminando credenciales antiguas del bot principal.`);
+let sentMsg = await _envio.sendMessage(m.chat, {
+    text: `⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...
+
+${loadingStates[0]} - Eliminando credenciales antiguas del bot principal.`
+}, { quoted: m });
+let messageKey = sentMsg.key;
 
 try {
 if (existsSync(mainSessionPath)) {
 rmSync(mainSessionPath, { recursive: true, force: true });
 await delay(1000);
 }
-await m.reply('✅ Credenciales principales eliminadas.');
+await _envio.sendMessage(m.chat, { 
+    text: `⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...
+
+${loadingStates[1]} - Credenciales principales eliminadas.`, 
+    edit: messageKey 
+}, { quoted: m });
 } catch (e) {
 console.error('Error al borrar sesión principal:', e);
-return m.reply('❌ Error al intentar borrar las credenciales principales.');
+return _envio.sendMessage(m.chat, { text: `⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...\n\n❌ Error al intentar borrar las credenciales principales:\n${e.message}`, edit: messageKey }, { quoted: m });
 }
 
-await m.reply('2. Copiando credenciales del subbot a la sesión principal...');
+await _envio.sendMessage(m.chat, { 
+    text: `⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...
+
+${loadingStates[2]} - Copiando credenciales del subbot a la sesión principal...`, 
+    edit: messageKey 
+}, { quoted: m });
 
 try {
-// Corregido: Llamando a mkdirSync importada
 mkdirSync(mainSessionPath, { recursive: true });
 
 await execPromise(`cp -r ${subBotSessionPath}/* ${mainSessionPath}/`);
@@ -184,15 +206,32 @@ if (!existsSync(join(mainSessionPath, 'creds.json'))) {
 throw new Error("La copia de creds.json falló.");
 }
 
-await m.reply('3. Eliminando la sesión del subbot original...');
+await _envio.sendMessage(m.chat, { 
+    text: `⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...
 
-rmSync(subBotSessionPath, { recursive: true, force: true });
-
-await m.reply('✅ Transferencia completa. Reiniciando el Bot...');
+${loadingStates[3]} - Copia de credenciales completada. Eliminando sesión del subbot original...`, 
+    edit: messageKey 
+}, { quoted: m });
 
 } catch (e) {
 console.error('Error durante la copia/eliminación:', e);
-return m.reply(`❌ Error crítico durante la transferencia de sesión:\n${e.message}`);
+return _envio.sendMessage(m.chat, { text: `⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...\n\n❌ Error crítico durante la transferencia de sesión:\n${e.message}`, edit: messageKey }, { quoted: m });
+}
+
+try {
+rmSync(subBotSessionPath, { recursive: true, force: true });
+
+await _envio.sendMessage(m.chat, { 
+    text: `✅ ¡Transferencia de sesión completada!
+*SubBot #${botIndex} (+${targetNumberRaw})* se ha convertido en el Bot Principal.
+
+${loadingStates[5]} - Reiniciando el Bot en 3 segundos...`, 
+    edit: messageKey 
+}, { quoted: m });
+
+} catch (e) {
+console.error('Error al eliminar sesión del subbot:', e);
+return _envio.sendMessage(m.chat, { text: `✅ ¡Transferencia de sesión completada!\n\n❌ Error al eliminar la sesión original del subbot:\n${e.message}`, edit: messageKey }, { quoted: m });
 }
 
 setTimeout(() => {
