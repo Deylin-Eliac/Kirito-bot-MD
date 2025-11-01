@@ -51,16 +51,16 @@ global.error = '✖️'
 global.msm = '⚠︎'
 
 
-global.emoji0 = '🕷️✎𓆩☽𓆪'
-global.emoji1 = '💀༗✧༄'
-global.emoji2 = '🦇↷♛߹߬'
-global.emoji3 = '🌙༊✰༆'
-global.emoji4 = '🕸️๛⍰☼'
-global.emoji5 = '🩸๛⌬➣'
-global.emoji6 = '🧛‍♂️☠︎︎𖤐'
-global.emoji7 = '🎃⌬༒'
-global.emoji8 = '🕯️༺⚰️༻'
-global.emoji9 = '👁‍🗨⛧𖤍'
+global.emoji0 = '🎄🎅✨'
+global.emoji1 = '🎁🎄❄️'
+global.emoji2 = '🦌🎅🎀'
+global.emoji3 = '⛄🎄🌟'
+global.emoji4 = '🔔🎁🎄'
+global.emoji5 = '🎅🎄🧦'
+global.emoji6 = '🎄🕯️🎁'
+global.emoji7 = '🎁🎄🍪'
+global.emoji8 = '🎄✨🎅'
+global.emoji9 = '🎀🎄🎁'
 
 global.emojis = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5, emoji6, emoji7, emoji8, emoji9].getRandom()
 global.emoji = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5, emoji6, emoji7, emoji8, emoji9].getRandom()
