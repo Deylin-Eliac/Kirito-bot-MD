@@ -1,4 +1,4 @@
-Import { WAMessageStubType } from '@whiskeysockets/baileys'
+const { WAMessageStubType } = require('@whiskeysockets/baileys')
 
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return true
