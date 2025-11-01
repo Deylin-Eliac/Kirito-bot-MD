@@ -1,4 +1,4 @@
-import { WAMessageStubType, generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
+import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 const frasesBienvenida = [
@@ -36,8 +36,8 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!chat?.welcome) return
 
   const tipo = 
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD ? 'Bienvenido 🎉' :
-    (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) ? 'Despedida 👋' :
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD ? '✰ 𝐁𝐢𝐞𝐧𝐯𝐞𝐧𝐢𝐝𝐨 ✰' :
+    (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) ? '✰ 𝐃𝐞𝐬𝐩𝐞𝐝𝐢𝐝𝐚 ✰' :
     null
 
   if (!tipo) return
@@ -64,56 +64,38 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const imgUrl = `https://canvas-8zhi.onrender.com/api/welcome3?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(frase)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(fondo)}`
 
-  // Crear mensaje decorativo tipo template interactivo
-  const templateMessage = generateWAMessageFromContent(m.chat, {
-    viewOnceMessage: {
-      message: {
-        interactiveMessage: proto.Message.InteractiveMessage.create({
-          header: {
-            title: tipo,
-            subtitle: grupo,
-            hasMediaAttachment: true,
-            ...(await conn.prepareMessageMedia({ image: { url: imgUrl } }, { upload: conn.waUploadToServer }))
-          },
-          body: {
-            text: `✰ Usuario: ${taguser}\n✎ Fecha: ${date}\n✎ Miembros: ${total}`
-          },
-          footer: {
-            text: "✨ Powered by Kirito-Bot-MD"
-          },
-          nativeFlowMessage: {
-            buttons: [
-              {
-                name: "cta_copy",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "💖 Bienvenido",
-                  copy_code: grupo
-                })
-              },
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "📢 Canal Oficial",
-                  url: "https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o"
-                })
-              }
-            ]
-          },
-          contextInfo: {
-            mentionedJid: [who],
-            externalAdReply: {
-              title: tipo,
-              body: frase,
-              thumbnailUrl: imgUrl,
-              sourceUrl: "https://deylin.xyz/",
-              mediaType: 1,
-              renderLargerThumbnail: true
-            }
-          }
-        })
+  const textoDecorativo = `
+╭───✰ 𝙀𝙫𝙚𝙣𝙩𝙤 𝙙𝙚 𝙂𝙧𝙪𝙥𝙤 ✰───╮
+✎ 𝙐𝙨𝙪𝙖𝙧𝙞𝙤: ${taguser}
+✎ 𝙂𝙧𝙪𝙥𝙤: ${grupo}
+✎ 𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨: ${total}
+✎ 𝙁𝙚𝙘𝙝𝙖: ${date}
+╰───────────────────────────────╯
+
+“${frase}”
+
+✰ 𝙋𝙤𝙬𝙚𝙧𝙚𝙙 𝙗𝙮 𝐊𝐢𝐫𝐢𝐭𝐨-𝐁𝐨𝐭 𝐌𝐃 ✰
+`.trim()
+
+  await conn.sendMessage(m.chat, {
+    text: textoDecorativo,
+    mentions: [who],
+    contextInfo: {
+      mentionedJid: [who],
+      externalAdReply: {
+        title: tipo,
+        body: frase,
+        mediaType: 1,
+        thumbnailUrl: imgUrl,
+        sourceUrl: 'https://deylin.xyz/',
+        showAdAttribution: true,
+        renderLargerThumbnail: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: '120363302968753676@newsletter',
+          newsletterName: '✰ 𝐊𝐢𝐫𝐢𝐭𝐨 𝐁𝐨𝐭 ✰',
+          serverMessageId: -1
+        }
       }
     }
-  }, {})
-
-  await conn.relayMessage(m.chat, templateMessage.message, { messageId: templateMessage.key.id })
+  })
 }
