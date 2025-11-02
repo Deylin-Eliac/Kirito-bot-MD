@@ -14,17 +14,17 @@ let handler = async (m, { conn, usedPrefix }) => {
         who = m.sender;
     }
 
-    let name2 = m.sender.split('@')[0];
-    let name = who.split('@')[0];
+    const name2 = m.pushName || 'Anónimo'
+  const name = await conn.getName(who) || 'Anónimo'
     m.react('🏳️‍🌈');
 
     let str;
         if (who !== m.sender) {
-    str = `🏳️‍🌈 *@${name2}* le da un tierno beso a *@${name}* 🏳️‍🌈\n\n¡El amor no tiene límites! 🌈✨`;
+    str = `🏳️‍🌈 *${name2}* le da un tierno beso a *@${name}* 🏳️‍🌈\n\n¡El amor no tiene límites! 🌈✨`;
 } else if (m.quoted) {
-    str = `🏳️‍🌈 *@${name2}* besa suavemente a *@${name}* 💞\n\nQué momento tan especial 😳💕`;
+    str = `🏳️‍🌈 *${name2}* besa suavemente a *@${name}* 💞\n\nQué momento tan especial 😳💕`;
 } else {
-    str = `🏳️‍🌈 *@${name2}* lanza un beso para todos en el grupo 😘💫\n\n¡Mucho amor para todos ustedes! ❤️`;
+    str = `🏳️‍🌈 *${name2}* lanza un beso para todos en el grupo 😘💫\n\n¡Mucho amor para todos ustedes! ❤️`;
 }
 
     if (m.isGroup) {
@@ -43,7 +43,8 @@ let handler = async (m, { conn, usedPrefix }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [who, m.sender]  
+            mentions: [who, m.sender],
+            ...global.rcanal 
         }, { quoted: m });
     }
 };
