@@ -28,11 +28,11 @@ let handler = async (m, { conn }) => {
 
     if (m.isGroup) {
         const videos = [
-            'https://tenor.com/bEm6t.gif',
-            'https://tenor.com/ckkl7QnHtg2.gif',
-            'https://tenor.com/bLusbUcOQS2.gif',
-            'https://tenor.com/ihGOGqmJEN6.gif',
-            'https://tenor.com/bndZV.gif'
+            'https://media.tenor.com/J7eGDvGeP9IAAAPo/enage-kiss-anime-hug.mp4',
+            'https://media.tenor.com/ucnupKiykIUAAAPo/hugs.mp4',
+            'https://media.tenor.com/2HxamDEy7XAAAAPo/yukon-child-form-embracing-ulquiorra.mp4',
+            'https://media.tenor.com/UIJmZ94KfoAAAAPo/mj.mp4',
+            'https://media.tenor.com/HBTbcCNvLRIAAAPo/syno-i-love-you-syno.mp4'
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
