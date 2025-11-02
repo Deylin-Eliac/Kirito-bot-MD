@@ -113,12 +113,20 @@ global.taguser = '@' + m.sender.split("@s.whatsapp.net")
 var more = String.fromCharCode(8206)
 global.rmr = more.repeat(850)
 
-global.icono = [
+/*global.icono = [
 'https://Kirito.my/media/images/1.jpg',
 'https://Kirito.my/media/images/2.jpg',
 'https://Kirito.my/media/images/3.jpg',
 'https://Kirito.my/media/images/4.jpg',
 'https://Kirito.my/media/images/5.jpg'
+].getRandom()*/
+
+global.icono = [
+'https://kirito.my/media/images/86490944_k.jpg',
+'https://kirito.my/media/images/37854135_k.jpg',
+'https://kirito.my/media/images/97492908_k.jpg',
+'https://kirito.my/media/images/20560424_k.jpg',
+'https://kirito.my/media/images/98334953_k.jpg'
 ].getRandom()
 
 global.packsticker = `┏━──────━◆◆━──────━┓\n✰ Usuario: ${nombre}\n⚔✰ Bot: ${botname}\n✰ Fecha: ${fecha}\n✰ Hora: ${tiempo}\n┗━──────━◆◆━──────━┛`;
