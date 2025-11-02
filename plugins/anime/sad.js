@@ -12,8 +12,9 @@ let handler = async (m, { conn }) => {
 
   
   const name2 = m.pushName || 'Anónimo'
-        let name = conn.getName(who)
+        
         let who = m.mentionedJid.length > 0 ? m.mentionedJid[0] : (m.quoted ? m.quoted.sender : m.sender)
+let name = conn.getName(who)
   await m.react('😔')
 
   let str
