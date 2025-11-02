@@ -14,16 +14,16 @@ let handler = async (m, { conn }) => {
         who = m.sender;
     }
 
-    let name2 = m.sender.split('@')[0];
-    let name = who.split('@')[0];
+    const name2 = m.pushName || 'Anónimo'
+  const name = await conn.getName(who) || 'Anónimo'
 
     m.react('🫂');
 
     let str;
     if (who !== m.sender) {
-        str = `🫂 *@${name2}* le da un abrazo a *@${name}*`;
+        str = `🫂 *${name2}* le da un abrazo a *${name}*`;
     } else {
-        str = `🫂 *@${name2}* se abraza a sí mismo. ¡Necesitas un abrazo!*`;
+        str = `🫂 *${name2}* se abraza a sí mismo. ¡Necesitas un abrazo!*`;
     }
 
     if (m.isGroup) {
@@ -41,7 +41,8 @@ let handler = async (m, { conn }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [who, m.sender]  
+            mentions: [who, m.sender],
+            ...global.rcanal  
         }, { quoted: m });
     }
 };
