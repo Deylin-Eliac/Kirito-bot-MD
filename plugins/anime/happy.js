@@ -23,11 +23,11 @@ let handler = async (m, { conn }) => {
   }
 
   const videos = [
-    'https://tenor.com/o595nAiltkE.gif',
-    'https://tenor.com/nn0YjazkgaI.gif',
-    'https://tenor.com/bIZi6.gif',
-    'https://tenor.com/ggY4v5Nev12.gif',
-    'https://tenor.com/bJZ9m.gif'
+    'https://media.tenor.com/8bPhxIk_rL4AAAPo/celebrate-anime.mp4',
+    'https://media.tenor.com/OiTJF1B4cokAAAPo/maomao-apothecary-diaries.mp4',
+    'https://media.tenor.com/7RG3JbLdlXIAAAPo/konata-izumi-konata.mp4',
+    'https://media.tenor.com/D05kuhjm9rUAAAPo/jjk-anime.mp4',
+    'https://media.tenor.com/Kr6jKur1_DYAAAPo/cat.mp4'
   ]
 
   const videoUrl = videos[Math.floor(Math.random() * videos.length)]
