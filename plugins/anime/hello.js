@@ -14,16 +14,16 @@ let handler = async (m, { conn, usedPrefix }) => {
         who = m.sender;
     }
 
-    let name2 = m.sender.split('@')[0];
-    let name = who.split('@')[0];
+    const name2 = m.pushName || 'Anónimo'
+  const name = await conn.getName(who) || 'Anónimo'
     m.react('👋');
 
     let str;
         if (who !== m.sender) {
 
-        str = `👋 *@${name2}* saluda a @${name}, ¿cómo están?`;
+        str = `👋 *${name2}* saluda a ${name}, ¿cómo están?`;
     } else {
-        str = `👋 *@${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy?`;
+        str = `👋 *${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy?`;
     }
 
     if (m.isGroup) {
@@ -41,7 +41,8 @@ let handler = async (m, { conn, usedPrefix }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [who, m.sender]  
+            mentions: [who, m.sender],
+            ...global.rcanal 
         }, { quoted: m });
     }
 };
