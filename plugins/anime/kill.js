@@ -27,10 +27,10 @@ let handler = async (m, { conn }) => {
 
     if (m.isGroup) {
         const videos = [
-            'https://tenor.com/bWHkG.gif',
-            'https://tenor.com/bhuYl.gif',
-            'https://tenor.com/bfWmy.gif',
-            'https://tenor.com/bK7VW.gif'
+            'https://media.tenor.com/aAvEGbU2WK0AAAPo/maria-osawa-canaan.mp4',
+            'https://media.tenor.com/6MEVMtk_R6gAAAPo/anime-gir-katana.mp4',
+            'https://media.tenor.com/cc1EzfBVr4oAAAPo/yandere-tagged.mp4',
+            'https://media.tenor.com/NbBCakbfZnkAAAPo/die-kill.mp4'
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
