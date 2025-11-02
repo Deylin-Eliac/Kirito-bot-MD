@@ -38,7 +38,8 @@ let handler = async (m, { conn }) => {
       video: { url: videoUrl },
       gifPlayback: true,
       caption: str,
-      mentions: [who, m.sender]
+      mentions: [who, m.sender],
+     ...global.rcanal
     },
     { quoted: m }
   )
