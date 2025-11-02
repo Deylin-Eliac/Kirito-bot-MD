@@ -17,7 +17,7 @@ let handler = async (m, { conn }) => {
 
   let str
   if (who !== m.sender) {
-    str = `😔 *${name2}* está triste por *@${name}*`
+    str = `😔 *${name2}* está triste por *${name}*`
   } else {
     str = `😔 *${name2}* está muy triste... necesita apoyo`
   }
