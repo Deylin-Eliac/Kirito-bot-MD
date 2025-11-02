@@ -94,7 +94,7 @@ global.saludo = hour;
   'https://Kirito.my/media/images/11.png',
   'https://Kirito.my/media/images/12.png',
   'https://Kirito.my/media/images/13.png'
-];/*
+];*/
 
 const imgs = [
 'https://kirito.my/media/images/46916697_k.jpg',
