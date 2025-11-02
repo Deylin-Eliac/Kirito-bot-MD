@@ -12,13 +12,13 @@ let handler = async (m, { conn }) => {
 
   
   const name2 = m.pushName || 'Anónimo'
-  const name = await conn.getName(who) || 'Anónimo'
-
+        let name = conn.getName(who)
+        let who = m.mentionedJid.length > 0 ? m.mentionedJid[0] : (m.quoted ? m.quoted.sender : m.sender)
   await m.react('😔')
 
   let str
   if (who !== m.sender) {
-    str = `😔 *${name2}* está triste por *@${name}*`
+    str = `😔 *${name2}* está triste por *@${name || who}*`
   } else {
     str = `😔 *${name2}* está muy triste... necesita apoyo`
   }
