@@ -115,7 +115,7 @@ if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) return m.reply(`${emo
 
 const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])]
 const subBotsCount = subBots.length
-const MAX_SUBBOTS = 21 
+const MAX_SUBBOTS = 30 
 if (subBotsCount >= MAX_SUBBOTS) {
 return conn.reply(m.chat, `${emoji} No se han encontrado espacios para subbots disponibles. Espera a que un subbot se desconecte e intenta más tarde.`, m)
 }
