@@ -10,16 +10,16 @@ let handler = async (m, { conn }) => {
     who = m.sender
   }
 
-  const name2 = m.sender.split('@')[0]
-  const name = who.split('@')[0]
+  const name2 = m.pushName || 'Anónimo'
+  const name = await conn.getName(who) || 'Anónimo'
 
   await m.react('😊')
 
   let str
   if (who !== m.sender) {
-    str = `😊 *@${name2}* está feliz por *@${name}*`
+    str = `😊 *${name2}* está feliz por *${name}*`
   } else {
-    str = `😊 *@${name2}* está muy feliz... compartiendo alegría`
+    str = `😊 *${name2}* está muy feliz... compartiendo alegría`
   }
 
   const videos = [
@@ -38,7 +38,8 @@ let handler = async (m, { conn }) => {
       video: { url: videoUrl },
       gifPlayback: true,
       caption: str,
-      mentions: [who, m.sender]
+      mentions: [who, m.sender],
+      ...global.rcanal
     },
     { quoted: m }
   )
