@@ -10,16 +10,17 @@ let handler = async (m, { conn }) => {
     who = m.sender
   }
 
+  
   const name2 = m.pushName || 'Anónimo'
-  const name = who.pushName || 'Anónimo'
+  const name = await conn.getName(who) || 'Anónimo'
 
   await m.react('😔')
 
   let str
   if (who !== m.sender) {
-    str = `😔 *@${name2}* está triste por *@${name}*`
+    str = `😔 *${name2}* está triste por *@${name}*`
   } else {
-    str = `😔 *@${name2}* está muy triste... necesita apoyo`
+    str = `😔 *${name2}* está muy triste... necesita apoyo`
   }
 
   const videos = [
@@ -39,7 +40,7 @@ let handler = async (m, { conn }) => {
       gifPlayback: true,
       caption: str,
       mentions: [who, m.sender],
-     ...global.rcanal
+      ...global.rcanal
     },
     { quoted: m }
   )
