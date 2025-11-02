@@ -10,8 +10,8 @@ let handler = async (m, { conn }) => {
     who = m.sender
   }
 
-  const name2 = m.sender.split('@')[0]
-  const name = who.split('@')[0]
+  const name2 = m.pushName || 'Anónimo'
+  const name = who.pushName || 'Anónimo'
 
   await m.react('😔')
 
