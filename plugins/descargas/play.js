@@ -224,14 +224,24 @@ const handler = async (m, { conn, text, command }) => {
          // ptt: true
         },
         { quoted: fkontak }
-      );
+      );*/
+await conn.sendMessage(
+  m.chat,
+  {
+    video: { url: dl.result.download }, 
+    fileName: `${dl.result.title}.mp4`,
+    mimetype: "video/mp4",
+    caption: `🎬 ${dl.result.title}`
+  },
+  { quoted: fkontak }
+);
     }
 
     if (["mp4", "play2"].includes(command)) {
       await m.react("🎬");
       const dl = await savetube.download(url, "video");
       if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
-      const response = await fetch(dl.result.download);
+     /* const response = await fetch(dl.result.download);
       const buffer = await response.buffer();
       await conn.sendMessage(
         m.chat,
