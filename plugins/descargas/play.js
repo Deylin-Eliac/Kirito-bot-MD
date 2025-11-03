@@ -171,7 +171,7 @@ const handler = async (m, { conn, text, command }) => {
       }
     };
 
-        
+
 
     const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -224,6 +224,24 @@ const handler = async (m, { conn, text, command }) => {
          // ptt: true
         },
         { quoted: fkontak }
+      );
+    }
+
+    if (["mp4", "play2"].includes(command)) {
+      await m.react("🎬");
+      const dl = await savetube.download(url, "video");
+      if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
+      /*const response = await fetch(dl.result.download);
+      const buffer = await response.buffer();
+      await conn.sendMessage(
+        m.chat,
+        {
+          video: buffer,
+          fileName: `${dl.result.title}.mp4`,
+          mimetype: "video/mp4",
+          caption: `🎬 ${dl.result.title}`
+        },
+        { quoted: fkontak }
       );*/
 await conn.sendMessage(
   m.chat,
@@ -235,24 +253,6 @@ await conn.sendMessage(
   },
   { quoted: fkontak }
 );
-    }
-
-    if (["mp4", "play2"].includes(command)) {
-      await m.react("🎬");
-      const dl = await savetube.download(url, "video");
-      if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
-     /* const response = await fetch(dl.result.download);
-      const buffer = await response.buffer();
-      await conn.sendMessage(
-        m.chat,
-        {
-          video: buffer,
-          fileName: `${dl.result.title}.mp4`,
-          mimetype: "video/mp4",
-          caption: `🎬 ${dl.result.title}`
-        },
-        { quoted: fkontak }
-      );
     }
   } catch (error) {
     console.error("❌ Error:", error);
