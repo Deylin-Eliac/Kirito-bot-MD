@@ -3,10 +3,8 @@ import NodeCache from "node-cache"
 import fs from "fs"
 import path from "path"
 import pino from 'pino'
-import chalk from 'chalk'
-import util from 'util' 
 import * as ws from 'ws'
-const { spawn, exec } = await import('child_process')
+const { exec } = await import('child_process')
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 import * as baileys from "@whiskeysockets/baileys" 
@@ -20,10 +18,9 @@ const {
     makeCacheableSignalKeyStore, 
     fetchLatestBaileysVersion, 
     generateWAMessageFromContent, 
-    proto 
 } = baileys; 
 
-const logger = pino({ level: "fatal" }) 
+const logger = pino({ level: "silent" }) 
 const { CONNECTING } = ws
 
 let m1 = '⌬';
@@ -44,7 +41,7 @@ let rtx = `
 *
 ⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
 
-> 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
+> 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜i𝐚𝐥 ↓
 `;
 
 let rtx2 = `
@@ -54,7 +51,7 @@ let rtx2 = `
 
 ⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇ𝗿ｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ → Ｉｎｇｒｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
 
 ⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽𝗶𝗿𝗮 ｅ𝗻 *60s* ⏳
 
@@ -66,8 +63,6 @@ let crm2 = "A7IG1kNXN1b"
 let crm3 = "SBpbmZvLWRvbmFyLmpz"
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 
-const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg'); 
-const thumb2 = Buffer.from(await res.arrayBuffer());
 const fkontak = {
     key: {
         participants: "0@s.whatsapp.net",
@@ -78,16 +73,11 @@ const fkontak = {
     message: {
         locationMessage: {
             name: `𝗦𝗨𝗕𝗕𝗢𝗧 𝗠𝗢𝗗𝗘 𝗖𝗢𝗗𝗘 ✦ 8\n ${botname}`,
-            jpegThumbnail: thumb2
+            jpegThumbnail: global.thumb2 || Buffer.alloc(0)
         }
     },
     participant: "0@s.whatsapp.net"
 };
-
-
-
-const res1 = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg');
-const thumb3 = Buffer.from(await res1.arrayBuffer());
 
 const fkontak1 = {
   key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -96,9 +86,9 @@ const fkontak1 = {
       itemCount: 1,
       status: 1,
       surface: 1,
-      message: `𝗖𝗢𝗡𝗘𝗖𝗧𝗔𝗗𝗢 𝗖𝗢𝗡 𝗪𝗛𝗔𝗧𝗦𝗔𝗣𝗣`,
+      message: `𝗖𝗢𝗡𝗘𝗖𝗧𝗔𝗗𝗢 𝗖𝗢𝗡 ＷＨＡＴＳＡＰＰ`,
       orderTitle: "Mejor Bot",
-      jpegThumbnail: thumb3
+      jpegThumbnail: global.thumb3 || Buffer.alloc(0)
     }
   }
 };
@@ -149,7 +139,7 @@ if (command === 'code') {
 command = 'qr'; 
 args.unshift('code')}
 const mcode = args[0] && /(--code|code)/.test(args[0].trim()) ? true : args[1] && /(--code|code)/.test(args[1].trim()) ? true : false
-let txtCode, codeBot, txtQR
+let txtQR
 
 if (mcode) {
 args[0] = args[0]?.replace(/^--code$|^code$/, "").trim()
@@ -222,14 +212,7 @@ async function connectionUpdate(update) {
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
 
-       /* txtCode = await conn.sendMessage(m.chat, {
-            image: { url: global.img },
-            caption: rtx2,
-            ...global.fake,
-            quoted: m,
-        });*/
-
-                const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
+        const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
             interactiveMessage: {
                 image: { url: global.img },
                 body: { text: rtx2 }, 
@@ -248,12 +231,8 @@ async function connectionUpdate(update) {
             }
         }), { quoted: m })
 
-
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
-        if (txtCode && txtCode.key) {
-            setTimeout(() => { conn.sendMessage(m.sender, { delete: txtCode.key })}, 60000) 
-        }
         if (codeBot && codeBot.key) {
             setTimeout(() => { conn.sendMessage(m.sender, { delete: codeBot.key })}, 60000) 
         }
@@ -273,18 +252,18 @@ async function connectionUpdate(update) {
         ].includes(reason);
 
         if (shouldReconnect) {
-            console.log(chalk.bold.magentaBright(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡\n┆ La conexión (+${path.basename(pathJadiBot)}) se cerró o perdió. Razón: ${reason}. RECONECTANDO...\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡`))
+            console.log(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡\n┆ La conexión (+${path.basename(pathJadiBot)}) se cerró o perdió. Razón: ${reason}. RECONECTANDO...\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡`)
             await delay(5000) 
             return creloadHandler(true).catch(console.error)
         } 
 
         if (reason === DisconnectReason.loggedOut || reason === 401 || reason === 405) {
-            console.log(chalk.bold.magentaBright(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡\n┆ SESIÓN CERRADA (+${path.basename(pathJadiBot)}). Borrando datos de sesión.\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡`))
+            console.log(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡\n┆ SESIÓN CERRADA (+${path.basename(pathJadiBot)}). Borrando datos de sesión.\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡`)
 
             try {
                 if (options.fromCommand) m?.chat ? await conn.sendMessage(`${path.basename(pathJadiBot)}@s.whatsapp.net`, {text : '*SESIÓN CERRADA O INVÁLIDA*\n\n> *INTENTE NUEVAMENTE VINCULARSE COMO SUB-BOT*' }, { quoted: m || null }) : ""
             } catch (error) {
-                console.error(chalk.bold.yellow(`Error al notificar cierre de sesión a: +${path.basename(pathJadiBot)}`))
+                console.error(`Error al notificar cierre de sesión a: +${path.basename(pathJadiBot)}`)
             }
             fs.rmdirSync(pathJadiBot, { recursive: true })
         }
@@ -298,7 +277,7 @@ async function connectionUpdate(update) {
         userName = sock.authState.creds.me.name || 'Anónimo'
         userJid = sock.authState.creds.me.jid || `${path.basename(pathJadiBot)}@s.whatsapp.net`
 
-        console.log(chalk.bold.cyanBright(`\n❒⸺⸺⸺⸺【• SUB-BOT •】⸺⸺⸺⸺❒\n│\n│ 🟢 ${userName} (+${path.basename(pathJadiBot)}) CONECTADO exitosamente.\n│\n❒⸺⸺⸺【• CONECTADO •】⸺⸺⸺❒`))
+        console.log(`\n❒⸺⸺⸺⸺【• SUB-BOT •】⸺⸺⸺⸺❒\n│\n│ 🟢 ${userName} (+${path.basename(pathJadiBot)}) CONECTADO exitosamente.\n│\n❒⸺⸺⸺【• CONECTADO •】⸺⸺⸺❒`)
 
         sock.isInit = true
 
@@ -328,7 +307,7 @@ setInterval(async () => {
         if (i < 0) return
         delete global.conns[i]
         global.conns.splice(i, 1)
-        console.log(chalk.bold.red(`\nSesión inactiva (+${path.basename(pathJadiBot)}) eliminada de la lista.`))
+        console.log(`\nSesión inactiva (+${path.basename(pathJadiBot)}) eliminada de la lista.`)
     }
 }, 300000) 
 
@@ -378,19 +357,6 @@ creloadHandler(false)
 }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-function msToTime(duration) {
-    var milliseconds = parseInt((duration % 1000) / 100),
-    seconds = Math.floor((duration / 1000) % 60),
-    minutes = Math.floor((duration / (1000 * 60)) % 60),
-    hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
-    hours = (hours < 10) ? '0' + hours : hours
-    minutes = (minutes < 10) ? '0' + minutes : minutes
-    seconds = (seconds < 10) ? '0' + seconds : seconds
-    return minutes + ' m y ' + seconds + ' s '
-}
 
 async function joinChannels(conn) {
     for (const channelId of Object.values(global.ch)) {
