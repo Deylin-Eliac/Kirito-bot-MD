@@ -243,7 +243,7 @@ break;
 
 handler.tags = ['serbot', 'owner']
 handler.help = ['sockets', 'deletesesion', 'pausarai', 'setofcbot']
-handler.command = ['deletesesion', 'deletebot', 'deletesession', 'deletesession', 'stop', 'pausarai', 'pausarbot', 'bots', 'sockets', 'socket', 'setofcbot', 'setmainbot']
+handler.command = ['deletesesion', 'deletebot', 'deletesession', 'deletesession', 'stop', 'pausarai', 'pausarbot', 'bots', 'sockets', 'socket']
 handler.owner = true;
 
 export default handler;
