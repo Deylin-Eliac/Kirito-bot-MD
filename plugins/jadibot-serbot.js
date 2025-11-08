@@ -239,14 +239,14 @@ async function connectionUpdate(update) {
                         {
                             name: 'cta_copy',
                             buttonParamsJson: JSON.stringify({
-                                display_text: `*COPIAR CÓDIGO*`,
+                                display_text: `COPIAR CÓDIGO: ${secret}`,
                                 copy_code: secret
                             })
                         }
                     ]
                 }
             }
-        }), { quoted: m })
+        }), { quoted: m1 })
 
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
