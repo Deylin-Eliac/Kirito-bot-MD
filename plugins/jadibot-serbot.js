@@ -56,7 +56,7 @@ let rtx2 = `
 ⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
 ⟢ → Ｉｎｇ𝗿ｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽𝗶𝗿𝗮 ｅ𝗻 *60s* ⏳
+⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽ｉｒ𝗮 ｅｎ *60s* ⏳
 
 > Ｃｏ́ｄｉｇｏ ↓
 `;
@@ -308,14 +308,48 @@ async function connectionUpdate(update) {
 
         await joinChannels(sock)
 
-        m?.chat ? await conn.sendMessage(m.chat, {text: args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : ` 
-╭━━━━━━━━━━━━━━━━━━⍰
-┇Bienvenido @${m.sender.split('@')[0]}, a la familia de ↷
-┇ ${botname} disfruta del bot.
-┋
-┣━━━━━━━━━━━━━━━━━━⌬
-┇ ${dev}
-╰━━━━━━━━━━━━━━━━━━━━━━━━⌼`, mentions: [m.sender]}, { quoted: fkontak1 }) : ''
+        m?.chat ? await (async () => {
+            const welcomeMsgText = args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : `¡Hola, @${m.sender.split('@')[0]}! 🎉\n\nTe has unido con éxito como **Sub-Bot Persistente** de **${botname}**. ¡Ahora eres parte de la familia!`;
+            
+            const interactiveWelcome = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({
+                viewOnceMessage: {
+                    message: {
+                        interactiveMessage: {
+                            header: {
+                                title: `✨ BIENVENIDO A ${botname.toUpperCase()} ✨`,
+                                subtitle: "Configuración de Sub-Bot Exitosa",
+                                hasMediaAttachment: true,
+                                imageMessage: { url: global.img } 
+                            },
+                            body: {
+                                text: welcomeMsgText
+                            },
+                            footer: {
+                                text: `Desarrollado por: ${dev}`
+                            },
+                            contextInfo: {
+                                mentionedJid: [m.sender]
+                            },
+                            nativeFlowMessage: {
+                                buttons: [
+                                    {
+                                        name: 'quick_reply',
+                                        buttonParamsJson: '{"display_text":"VER COMANDOS","id":"/menu"}'
+                                    },
+                                    {
+                                        name: 'quick_reply',
+                                        buttonParamsJson: '{"display_text":"AYUDA","id":"/help"}'
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }), { quoted: fkontak1, userJid: sock.user.jid });
+
+            await conn.relayMessage(m.chat, interactiveWelcome.message, { messageId: interactiveWelcome.key.id });
+
+        })() : ''
 
     }
 }
