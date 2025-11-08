@@ -218,33 +218,35 @@ async function connectionUpdate(update) {
         return
     } 
 
-        if (qr && mcode && !qrSent) { 
+    if (qr && mcode && !qrSent) { 
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
 
-        const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
+       /* txtCode = await conn.sendMessage(m.chat, {
+            image: { url: global.img },
+            caption: rtx2,
+            ...global.fake,
+            quoted: m,
+        });*/
+
+                const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
             interactiveMessage: {
-                header: { // Se añade el encabezado para la imagen
-                    title: `💻 CÓDIGO DE VINCULACIÓN`,
-                    subtitle: `CÓDIGO: ${secret}`,
-                    hasMediaAttachment: true,
-                    imageMessage: { url: global.img } 
-                },
-                body: { text: rtx2.trim() }, 
+                image: { url: global.img },
+                body: { text: rtx2 }, 
                 footer: { text: `${dev}` },
                 nativeFlowMessage: {
                     buttons: [
                         {
                             name: 'cta_copy',
                             buttonParamsJson: JSON.stringify({
-                                display_text: `COPIAR CÓDIGO`,
-                                copy_code: secret // El código a copiar
+                                display_text: `COPIAR CÓDIGO: ${secret}`,
+                                copy_code: secret
                             })
                         }
                     ]
                 }
             }
-        }), { quoted: m })
+        }), { quoted: m1 })
 
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
@@ -392,5 +394,3 @@ async function joinChannels(conn) {
         await conn.newsletterFollow(channelId).catch(() => {})
     }
 }
-
-
