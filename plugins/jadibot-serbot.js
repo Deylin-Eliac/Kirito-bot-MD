@@ -1,4 +1,4 @@
-import qrcode from "qrcode"
+Import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
 import path from "path"
@@ -44,7 +44,7 @@ let rtx = `
 *
 ⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
 
-> 🔗 𝐂𝐚𝐧ａｌ 𝐎𝐟ｉｃｉaｌ ↓
+> 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
 `;
 
 let rtx2 = `
@@ -52,11 +52,11 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
-⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹ａｄ𝗼ｓ  
-⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿ｏ  
-⟢ → Ｉｎｇｒｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
+⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
+⟢ → Ｉｎｇ𝗿ｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅ｐｉｒａ ｅｎ *60s* ⏳
+⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽𝗶𝗿𝗮 ｅ𝗻 *60s* ⏳
 
 > Ｃｏ́ｄｉｇｏ ↓
 `;
@@ -222,15 +222,17 @@ async function connectionUpdate(update) {
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
 
-        const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
+       /* txtCode = await conn.sendMessage(m.chat, {
+            image: { url: global.img },
+            caption: rtx2,
+            ...global.fake,
+            quoted: m,
+        });*/
+
+                const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
             interactiveMessage: {
-                header: { 
-                    title: `💻 CÓDIGO DE VINCULACIÓN`,
-                    subtitle: `Vínculo de ${botname}`,
-                    hasMediaAttachment: true,
-                    imageMessage: { url: global.img } 
-                },
-                body: { text: rtx2.trim() }, 
+                image: { url: global.img },
+                body: { text: rtx2 }, 
                 footer: { text: `${dev}` },
                 nativeFlowMessage: {
                     buttons: [
@@ -306,36 +308,11 @@ async function connectionUpdate(update) {
 
         await joinChannels(sock)
 
-        m?.chat ? await (async () => {
-            const welcomeMsgText = args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : `*¡Bienvenido/a, @${m.sender.split('@')[0]}!* ✨\n\nTu dispositivo se ha vinculado con éxito como un **Sub-Bot Persistente** de ${botname}. Ahora puedes enviar comandos y automatizar tus tareas.\n\n_Para ver los comandos disponibles, escribe */menu*._`;
-            
-            const interactiveWelcome = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({
-                viewOnceMessage: {
-                    message: {
-                        interactiveMessage: {
-                            header: {
-                                title: `✅ ¡CONEXIÓN ESTABLECIDA!`,
-                                subtitle: `${botname.toUpperCase()} - SUB-BOT ACTIVO`,
-                                hasMediaAttachment: true,
-                                imageMessage: { url: global.img } 
-                            },
-                            body: {
-                                text: welcomeMsgText
-                            },
-                            footer: {
-                                text: `📌 Soporte y Desarrollador: ${dev}`
-                            },
-                            contextInfo: {
-                                mentionedJid: [m.sender]
-                            }
-                        }
-                    }
-                }
-            }), { quoted: fkontak1, userJid: sock.user.jid });
-
-            await conn.relayMessage(m.chat, interactiveWelcome.message, { messageId: interactiveWelcome.key.id });
-
-        })() : ''
+        m?.chat ? await conn.sendMessage(m.chat, {text: args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : ` 
+╭━━━━━━━━━━━━━━━━━━⍰
+┇Bienvenido @${m.sender.split('@')[0]}, a la familia de ↷
+┇ ${botname} disfruta del bot.
+╰━━━━━━━━━━━━━━━━━━━━━━━━⌼`, mentions: [m.sender]}, { quoted: m1 }) : ''
 
     }
 }
@@ -417,3 +394,5 @@ async function joinChannels(conn) {
         await conn.newsletterFollow(channelId).catch(() => {})
     }
 }
+
+
