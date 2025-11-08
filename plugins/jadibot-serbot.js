@@ -1,4 +1,4 @@
-Import qrcode from "qrcode"
+import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
 import path from "path"
