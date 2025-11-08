@@ -44,7 +44,7 @@ let rtx = `
 *
 ⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
 
-> 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
+> 🔗 𝐂𝐚𝐧ａｌ 𝐎𝐟ｉｃｉaｌ ↓
 `;
 
 let rtx2 = `
@@ -52,11 +52,11 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
-⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
-⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇ𝗿ｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹ａｄ𝗼ｓ  
+⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿ｏ  
+⟢ → Ｉｎｇｒｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽ｉｒ𝗮 ｅｎ *60s* ⏳
+⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅ｐｉｒａ ｅｎ *60s* ⏳
 
 > Ｃｏ́ｄｉｇｏ ↓
 `;
@@ -222,17 +222,15 @@ async function connectionUpdate(update) {
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
 
-       /* txtCode = await conn.sendMessage(m.chat, {
-            image: { url: global.img },
-            caption: rtx2,
-            ...global.fake,
-            quoted: m,
-        });*/
-
-                const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
+        const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
             interactiveMessage: {
-                image: { url: global.img },
-                body: { text: rtx2 }, 
+                header: { 
+                    title: `💻 CÓDIGO DE VINCULACIÓN`,
+                    subtitle: `Vínculo de ${botname}`,
+                    hasMediaAttachment: true,
+                    imageMessage: { url: global.img } 
+                },
+                body: { text: rtx2.trim() }, 
                 footer: { text: `${dev}` },
                 nativeFlowMessage: {
                     buttons: [
@@ -246,7 +244,7 @@ async function connectionUpdate(update) {
                     ]
                 }
             }
-        }), { quoted: m })
+        }), { quoted: m1 })
 
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
@@ -309,15 +307,15 @@ async function connectionUpdate(update) {
         await joinChannels(sock)
 
         m?.chat ? await (async () => {
-            const welcomeMsgText = args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : `¡Hola, @${m.sender.split('@')[0]}! 🎉\n\nTe has unido con éxito como **Sub-Bot Persistente** de **${botname}**. ¡Ahora eres parte de la familia!`;
+            const welcomeMsgText = args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : `*¡Bienvenido/a, @${m.sender.split('@')[0]}!* ✨\n\nTu dispositivo se ha vinculado con éxito como un **Sub-Bot Persistente** de ${botname}. Ahora puedes enviar comandos y automatizar tus tareas.\n\n_Para ver los comandos disponibles, escribe */menu*._`;
             
             const interactiveWelcome = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({
                 viewOnceMessage: {
                     message: {
                         interactiveMessage: {
                             header: {
-                                title: `✨ BIENVENIDO A ${botname.toUpperCase()} ✨`,
-                                subtitle: "Configuración de Sub-Bot Exitosa",
+                                title: `✅ ¡CONEXIÓN ESTABLECIDA!`,
+                                subtitle: `${botname.toUpperCase()} - SUB-BOT ACTIVO`,
                                 hasMediaAttachment: true,
                                 imageMessage: { url: global.img } 
                             },
@@ -325,22 +323,10 @@ async function connectionUpdate(update) {
                                 text: welcomeMsgText
                             },
                             footer: {
-                                text: `Desarrollado por: ${dev}`
+                                text: `📌 Soporte y Desarrollador: ${dev}`
                             },
                             contextInfo: {
                                 mentionedJid: [m.sender]
-                            },
-                            nativeFlowMessage: {
-                                buttons: [
-                                    {
-                                        name: 'quick_reply',
-                                        buttonParamsJson: '{"display_text":"VER COMANDOS","id":"/menu"}'
-                                    },
-                                    {
-                                        name: 'quick_reply',
-                                        buttonParamsJson: '{"display_text":"AYUDA","id":"/help"}'
-                                    }
-                                ]
                             }
                         }
                     }
