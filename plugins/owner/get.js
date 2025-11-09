@@ -13,7 +13,7 @@ let handler = async (m, { conn, text }) => {
         let buffer = await m.quoted.download()
         let txt = buffer.toString('utf-8')
         try { txt = format(JSON.parse(txt)) } catch {}
-        await m.reply('txt')
+        await m.reply(txt)
         return m.react(`👑`)
       }
 
@@ -36,7 +36,7 @@ let handler = async (m, { conn, text }) => {
 
     let txt = (await res.buffer()).toString('utf-8')
     try { txt = format(JSON.parse(txt)) } catch {}
-    await m.reply('txt')
+    await m.reply(txt)
     await m.react(`🔥`)
 
   } catch (err) {
