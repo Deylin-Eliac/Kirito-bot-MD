@@ -69,7 +69,7 @@ async function sendAlbumMessage(conn, jid, medias, options = {}) {
 
 const pins = async (judul) => {
   try {
-    const res = await axios.get(`https://api.kirito.my/api/pinterest?q=${encodeURIComponent(judul)}&apikey=by_deylin`);
+    const res = await axios.get(`${kirito}/api/pinterest?q=${encodeURIComponent(judul)}&apikey=by_deylin`);
     if (Array.isArray(res.data.images)) {
       return res.data.images.map(url => ({
         image_large_url: url,
