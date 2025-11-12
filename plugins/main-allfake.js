@@ -97,11 +97,11 @@ global.saludo = hour;
 ];*/
 
 const imgs = [
-'https://kirito.my/media/images/46916697_k.jpg',
-'https://kirito.my/media/images/34233570_k.jpg',
-'https://kirito.my/media/images/58665955_k.jpg',
-'https://kirito.my/media/images/74829142_k.jpg',
-'https://kirito.my/media/images/97506543_k.jpg'
+`${kirito}/media/images/46916697_k.jpg`,
+`${kirito}/media/images/34233570_k.jpg`,
+`${kirito}/media/images/58665955_k.jpg`,
+`${kirito}/media/images/74829142_k.jpg`,
+`${kirito}/media/images/97506543_k.jpg`
 ]
 
 global.img = imgs[Math.floor(Math.random() * imgs.length)];
@@ -122,18 +122,18 @@ global.rmr = more.repeat(850)
 ].getRandom()*/
 
 global.icono = [
-'https://kirito.my/media/images/86490944_k.jpg',
-'https://kirito.my/media/images/37854135_k.jpg',
-'https://kirito.my/media/images/97492908_k.jpg',
-'https://kirito.my/media/images/20560424_k.jpg',
-'https://kirito.my/media/images/98334953_k.jpg'
+`${kirito}/media/images/86490944_k.jpg`,
+`${kirito}/media/images/37854135_k.jpg`,
+`${kirito}/media/images/97492908_k.jpg`,
+`${kirito}/media/images/20560424_k.jpg`,
+`${kirito}/media/images/98334953_k.jpg`
 ].getRandom()
 
 global.packsticker = `┏━──────━◆◆━──────━┓\n✰ Usuario: ${nombre}\n⚔✰ Bot: ${botname}\n✰ Fecha: ${fecha}\n✰ Hora: ${tiempo}\n┗━──────━◆◆━──────━┛`;
 global.packsticker2 = `\n┏━──────━◆◆━──────━┓\n👑 Desarrollador: ${dev}\n┗━──────━◆◆━──────━┛`;
 
 
-    const res = await fetch('https://kirito.my/media/images/95705905_k.jpg');
+    const res = await fetch(`${kirito}/media/images/95705905_k.jpg`);
     const thumb2 = Buffer.from(await res.arrayBuffer());
     const userJid = m.sender
 
