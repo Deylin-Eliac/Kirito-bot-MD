@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import crypto from 'crypto'
 import { fileTypeFromBuffer } from 'file-type'
 
-const UPLOAD_ENDPOINT = 'https://api.kirito.my/api/upload'
+const UPLOAD_ENDPOINT = `${kirito}/api/upload`
 
 function formatBytes(bytes) {
   if (!Number.isFinite(bytes) || bytes === 0) return '0 B'
