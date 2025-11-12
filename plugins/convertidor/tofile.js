@@ -13,7 +13,7 @@ let handler = async (m, { conn, text, args }) => {
     const q = m.quoted ? m.quoted : m
     const mimeMsg = (q.msg || q).mimetype || q.mediaType || ""
 
-        const res = await fetch('https://kirito.my/media/images/38786098_k.jpg');
+        const res = await fetch(`${kirito}/media/images/38786098_k.jpg`);
         const thumb3 = Buffer.from(await res.arrayBuffer());
 
         let fkontak = {
