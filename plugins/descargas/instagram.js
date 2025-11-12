@@ -32,7 +32,7 @@ let handler = async (m, { conn, args }) => {
   try {
     if (m.react) await m.react("⏳")
 
-    const apiUrl = `https://api.kirito.my/api/instagram?url=${encodeURIComponent(args[0])}&apikey=by_deylin`
+    const apiUrl = `${kirito}/api/instagram?url=${encodeURIComponent(args[0])}&apikey=by_deylin`
     const response = await fetch(apiUrl)
     const json = await response.json()
 
