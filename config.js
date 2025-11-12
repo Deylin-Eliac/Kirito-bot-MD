@@ -29,6 +29,7 @@ global.cheerio = cheerio
 global.fs = fs
 global.fetch = fetch
 global.axios = axios
+global.kirito = 'https://kirito-my.vercel.app'
 global.moment = moment   
 
 let icono1 = [
