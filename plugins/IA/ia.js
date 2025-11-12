@@ -10,7 +10,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     conn.sendPresenceUpdate('composing', m.chat)
 
     const id = m.sender || 'anon'
-    const apiUrl = `https://kirito.my/api/mode-ia?prompt=${encodeURIComponent(text)}&id=${encodeURIComponent(id)}&apikey=by_deylin`
+    const apiUrl = `${kirito}/api/mode-ia?prompt=${encodeURIComponent(text)}&id=${encodeURIComponent(id)}&apikey=by_deylin`
 
     const res = await fetch(apiUrl)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
