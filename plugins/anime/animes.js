@@ -56,7 +56,7 @@ async function sendAlbumMessage(conn, jid, medias, options = {}) {
 
 let handler = async (m, { conn }) => {
   try {
-    const res = await fetch(`https://api.kirito.my/api/anime?apikey=by_deylin`)
+    const res = await fetch(`${kirito}/api/anime?apikey=by_deylin`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
 
