@@ -8,19 +8,19 @@ import axios from 'axios'
 import moment from 'moment-timezone' 
 
 global.owner = [
-  [ '50432955554', 'Deylin', true ]
+  [ '584244568255', 'Alejandro', true ]
 ]; 
 
-global.suittag = ['50432955554'] 
+global.suittag = ['584244568255'] 
 global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
 global.packname = '🎅🎄 𝙺𝚒𝚛𝚒𝚝𝚘-𝙱𝚘𝚝 𝙼𝙳 ✨⛄';
 global.botname = '🎁 𝗞𝗜𝗥𝗜𝗧𝗢-𝗕𝗢𝗧 𝗠𝗗 ⛄★.°🦌';
-global.author = '🎄 𝑴𝒂𝒅𝒆 𝑩𝒚 𝐃𝐞𝐲𝐥𝐢𝐧 🎅❄️';
-global.dev = '🔔 © ρσɯҽɾҽԃ Ⴆყ 𝑫ҽყʅιɳ 🎁🎄';
-global.textbot = '🧦🎅 ᴋɪʀɪᴛᴏ-ʙᴏᴛ ᴍᴅ • 𝑫𝒆𝒚𝒍𝒊𝒏 ❄️🎄✨';
-global.etiqueta = '🎄 𝑫𝒆𝒚𝒍𝒊𝒏 🎅';
+global.author = '🎄 𝑴𝒂𝒅𝒆 𝑩𝒚 𝐀𝐥𝐞𝐣𝐚𝐧𝐝𝐫𝐨 🎅❄️';
+global.dev = '🔔 © ρσɯҽɾҽԃ Ⴆყ 𝐀𝐥𝐞𝐣𝐚𝐧𝐝𝐫𝐨 🎁🎄';
+global.textbot = '🧦🎅 ᴋɪʀɪᴛᴏ-ʙᴏᴛ ᴍᴅ • 𝐀𝐥𝐞𝐣𝐚𝐧𝐝𝐫𝐨 ❄️🎄✨';
+global.etiqueta = '🎄 𝐀𝐥𝐞𝐣𝐚𝐧𝐝𝐫𝐨 🎅';
 global.ch = {
 ch1: '120363403593951965@newsletter',
 ch2: '120363403593951965@newsletter',
