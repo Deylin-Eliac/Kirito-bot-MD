@@ -14,7 +14,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   let teks = `*👑 NUEVA SUGERENCIA 👑*\n\n✎ *Contenido:*\n• ${text}\n\n✎ *Usuario:*\n• ${m.pushName || 'Anónimo'}\n• Número: wa.me/${m.sender.split('@')[0]}\n\n_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`;
 
-  let ownerJid = '50432955554@s.whatsapp.net';
+  let ownerJid = '584244568255@s.whatsapp.net';
   let staffGroup = '120363420911001779@g.us';
 
   await conn.sendMessage(ownerJid, { text: teks, mentions: [m.sender] });
