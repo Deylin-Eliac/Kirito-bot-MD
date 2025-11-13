@@ -13,7 +13,7 @@
 
 > [!CAUTION]  
 > **📜 Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
-> ⚠︎ Queda prohibido distribuir el código sin autorización del autor [Deylin](https://wa.me/50432955554).
+> ⚠︎ Queda prohibido distribuir el código sin autorización del autor [𝐀𝐥𝐞𝐣𝐚𝐧𝐝𝐫𝐨](https://wa.me/584244568255).
 
 ---
 
