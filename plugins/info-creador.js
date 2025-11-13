@@ -2,7 +2,7 @@ import PhoneNumber from 'awesome-phonenumber';
 
 async function handler(m, { conn }) {
   m.react('👑');
-  const numCreador = '50432955554';
+  const numCreador = '584244568255';
   const ownerJid = numCreador + '@s.whatsapp.net';
 
     const res = await fetch('https://files.catbox.moe/cduhlw.jpg');
@@ -24,7 +24,7 @@ const thumb2 = Buffer.from(await res.arrayBuffer());
     participant: "0@s.whatsapp.net"
   };
 
-  const name = await conn.getName(ownerJid) || 'Deylin';
+  const name = await conn.getName(ownerJid) || '𝐀𝐥𝐞𝐣𝐚𝐧𝐝𝐫𝐨';
   const about = (await conn.fetchStatus(ownerJid).catch(() => {}))?.status || ' Servicios técnicos de software para WhatsApp';
   const empresa = ' Servicios Tecnológicos';
 
