@@ -85,7 +85,7 @@ else if (m.messageStubType == 30) tipo = '✦ Administrador removido ✦', mensa
       currencyCode: 'USD',
       priceAmount1000: '0',
       retailerId: 1677,
-      url: `https://deylin.xyz/#sitio_web_del_creador`,
+      url: `${botname}`,
       productImageCount: 1
     },
     businessOwnerJid: id,
