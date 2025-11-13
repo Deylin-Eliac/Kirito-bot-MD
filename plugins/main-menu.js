@@ -83,7 +83,7 @@ ${commandsForTag.map(menu => menu.help.map(help =>
 ╰━━━━━━━━━━━━━━⌬`
     }).filter(text => text !== '').join('\n')}
 
-⌬⌬➩ © Powered by Deylin - ${botname}
+⌬⌬➩ © Powered by ${dev} - ${botname}
 `.trim()
 
 let imgurl = global.img
