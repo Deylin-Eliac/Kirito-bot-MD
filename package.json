@@ -13,14 +13,14 @@
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/Deylin-Eliac/obito-b.git"
+"url": "git+https://github.com/alejandroperez242425-maker/Kirito-bot-MD.git"
 },  
 "author": "Deylin",
 "license": "MIT-License",
 "bugs": {
-"url": "https://github.com/Deylin-Eliac/obito-b/issues"
+"url": "https://github.com/alejandroperez242425-maker/Kirito-bot-MD/issues"
 },
-"homepage": "https://github.com/Deylin-Eliac/obito-b#readme",
+"homepage": "https://github.com/alejandroperez242425-maker/Kirito-bot-MD#readme",
 "dependencies": {
 "@bochilteam/scraper": "^4.2.4",
 "@hapi/boom": "^10.0.1",
