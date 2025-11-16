@@ -32,7 +32,7 @@ export async function handler(chatUpdate) {
     if (global.db.data == null) {
         await global.loadDatabase();
     }
-    
+
     conn.processedMessages = conn.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
@@ -52,7 +52,7 @@ export async function handler(chatUpdate) {
     }
 
     try {
-        
+
 
         m.exp = 0;
         m.coin = false;
@@ -94,7 +94,7 @@ export async function handler(chatUpdate) {
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
-        
+
         if (typeof global.db.data.users[senderJid] !== 'object') global.db.data.users[senderJid] = {};
         if (user) {
             if (!('exp' in user) || !isNumber(user.exp)) user.exp = 0;
@@ -103,7 +103,7 @@ export async function handler(chatUpdate) {
         } else {
             global.db.data.users[senderJid] = { exp: 0, coin: 0, muto: false };
         }
-        
+
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
         const isOwner = isROwner || m.fromMe;
@@ -217,7 +217,7 @@ export async function handler(chatUpdate) {
                 continue;
             }
 
-            
+
 
             if (!isAccept) continue;
 
@@ -298,11 +298,6 @@ export async function handler(chatUpdate) {
                     stat.lastSuccess = now;
                 }
             }
-        }
-        
-        
-        if (conn.readMessages && !m.error && !opts['nyimak']) {
-            conn.readMessages([m.key]).catch(e => console.error(e));
         }
     }
 }
