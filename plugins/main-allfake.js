@@ -75,7 +75,7 @@ let correo = 'bot@gmail.com'
 
 global.redes = [canal, canal2, git, github, correo].getRandom()
 
-global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
+global.canalIdM = ["120363403598732691@newsletter", "120363403598732691@newsletter"]
 global.canalNombreM = ["🎄𝐊𝐢𝐫𝐢𝐭𝐨-𝐁𝐨𝐭 𝐌𝐃 ✦ ᴜɴᴇᴛᴇ ᴀʟ ᴄᴀɴᴀʟ ⛄.", "🦌𝕂𝕚𝕣𝕚𝕥𝕠-𝔹𝕠𝕥 𝕄𝔻 - 𝚞𝚗𝚎𝚝𝚎 𝚊𝚕 𝚌𝚊𝚗𝚊𝚕.⛄"]
 global.channelRD = await getRandomChannel()
 
