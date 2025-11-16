@@ -28,9 +28,7 @@ console.log(`Error : ${e}`)
 }}
 
 //creador y otros
-global.creador = 'Wa.me/584244568255'
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
-global.asistencia = 'Wa.me/584244568255'
 global.listo = ' *Aquí tienes, shinobi ❛‿˂̵✧*'
 global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/nv87us.jpg')
 
@@ -71,7 +69,7 @@ global.wait = '✪ Espera un momento, soy lento...';
 //Enlaces
 var canal = 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'  
 let canal2 = 'https://whatsapp.com/channel/0029VayQwPsFnSzESZJ9Us3z'
-var git = 'https://github.com/alejandroperez242425-maker'
+var git = 'https://github.com/Deylin-Eliac'
 var github = 'https://github.com/alejandroperez242425-maker/Kirito-bot-MD' 
 let correo = 'bot@gmail.com'
 
