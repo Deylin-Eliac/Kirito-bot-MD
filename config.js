@@ -22,8 +22,8 @@ global.dev = '🔔 © ρσɯҽɾҽԃ Ⴆყ 𝑬𝒍𝒊𝒂𝒄 🎁🎄';
 global.textbot = '🧦🎅 ᴋɪʀɪᴛᴏ-ʙᴏᴛ ᴍᴅ • 𝑬𝒍𝒊𝒂𝒄 ❄️🎄✨';
 global.etiqueta = '🎄 𝞔𝘭ⅈɑｃ 🎅';
 global.ch = {
-ch1: '120363403593951965@newsletter',
-ch2: '120363403593951965@newsletter',
+ch1: '120363403598732691@newsletter',
+ch2: '120363403598732691@newsletter',
 }
 global.cheerio = cheerio
 global.fs = fs
