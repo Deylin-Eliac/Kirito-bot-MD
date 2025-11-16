@@ -452,53 +452,50 @@ async function readRecursive(folder) {
 
 async function filesInit() {
   await readRecursive(pluginFolder);
+  global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)));
 }
 
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 
 global.reload = async (_ev, filename) => {
+    const relativePath = path.relative(pluginFolder, filename);
+    const pluginKey = relativePath.replace(/\\/g, '/');
+    const absolutePath = join(pluginFolder, relativePath);
 
-const absolutePath = join(pluginFolder, filename);
+    if (pluginFilter(pluginKey)) {
+        const dir = global.__filename(absolutePath);
 
-const pluginKey = path.relative(pluginFolder, absolutePath).replace(/\\/g, '/'); 
+        if (existsSync(absolutePath)) {
+            conn.logger.info(` updated plugin - '${pluginKey}'`);
+        } else {
+            conn.logger.warn(`deleted plugin - '${pluginKey}'`);
+            delete global.plugins[pluginKey];
+            return;
+        }
 
-if (pluginFilter(filename)) {
-    const dir = global.__filename(absolutePath);
+        const err = syntaxerror(readFileSync(dir, 'utf8'), pluginKey, {
+            sourceType: 'module',
+            allowAwaitOutsideFunction: true,
+        });
 
-    if (pluginKey in global.plugins) {  
-        if (existsSync(dir)) conn.logger.info(` updated plugin - '${pluginKey}'`);  
-        else {  
-            conn.logger.warn(`deleted plugin - '${pluginKey}'`);  
-            return delete global.plugins[pluginKey];  
-        }  
-    } else conn.logger.info(`new plugin - '${pluginKey}'`);  
-
-
-    const err = syntaxerror(readFileSync(dir), pluginKey, {  
-        sourceType: 'module',  
-        allowAwaitOutsideFunction: true,  
-    });  
-
-    if (err) conn.logger.error(`syntax error while loading '${pluginKey}'\n${format(err)}`);  
-    else {  
-        try {  
-
-            const module = (await import(`${dir}?update=${Date.now()}`));  
-            global.plugins[pluginKey] = module.default || module;  
-        } catch (e) {  
-            conn.logger.error(`error require plugin '${pluginKey}\n${format(e)}'`);  
-        } finally {  
-            global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)));  
-        }  
+        if (err) conn.logger.error(`syntax error while loading '${pluginKey}'\n${format(err)}`);
+        else {
+            try {
+                const module = (await import(`${dir}?update=${Date.now()}`));
+                global.plugins[pluginKey] = module.default || module;
+            } catch (e) {
+                conn.logger.error(`error require plugin '${pluginKey}\n${format(e)}'`);
+            } finally {
+                global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)));
+            }
+        }
     }
-
-}
 };
-
 
 Object.freeze(global.reload);
 watch(pluginFolder, { recursive: true }, global.reload);
+
 
 await global.reloadHandler();
 async function _quickTest() {
