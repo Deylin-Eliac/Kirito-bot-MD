@@ -64,7 +64,7 @@ let handler = async (m, { conn, text }) => {
     await m.react(rwait);
     conn.reply(m.chat, `${emoji} Descargando videos, espere un momento...`, m, rcanal);
 
-    const { data: response } = await axios.get(`https://apis-starlights-team.koyeb.app/starlight/tiktoksearch?text=${encodeURIComponent(text)}`);
+    const { data: response } = await axios.get(`https://delirius-apiofc.vercel.app/search/tiktoksearch?query=${encodeURIComponent(text)}`);
     let searchResults = response.data;
 
     if (!searchResults || searchResults.length === 0) {
