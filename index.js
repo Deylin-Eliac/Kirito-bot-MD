@@ -167,6 +167,7 @@ const connectionOptions = {
 global.conn = makeWASocket(connectionOptions);
 
 const WATERMARK_PATH = path.join(__dirname, 'watermark.png');
+const WATERMARK_WIDTH_PX = 150;
 let watermarkBuffer;
 try {
     if (existsSync(WATERMARK_PATH)) {
@@ -183,9 +184,13 @@ async function aplicarMarcaDeAgua(inputImageBuffer) {
     if (!watermarkBuffer) return inputImageBuffer;
     
     try {
+        const resizedWatermarkBuffer = await sharp(watermarkBuffer)
+            .resize(WATERMARK_WIDTH_PX, null, { fit: 'contain' })
+            .toBuffer();
+
         const outputBuffer = await sharp(inputImageBuffer)
             .composite([{
-                input: watermarkBuffer,
+                input: resizedWatermarkBuffer,
                 gravity: sharp.gravity.northwest,
             }])
             .toBuffer();
