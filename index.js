@@ -33,6 +33,7 @@ const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBai
 import readline, { createInterface } from 'readline';
 import NodeCache from 'node-cache';
 import sharp from 'sharp';
+import fetch from 'node-fetch';
 const { CONNECTING } = ws;
 const { chain } = lodash;
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
@@ -206,11 +207,27 @@ const sendMessageOriginal = conn.sendMessage;
 
 conn.sendMessage = async (jid, content, options = {}) => {
     
-    if (content && content.image instanceof Buffer) {
-        
-        const imagenFinalBuffer = await aplicarMarcaDeAgua(content.image);
+    let imageContent = content && content.image;
 
-        content.image = imagenFinalBuffer;
+    if (imageContent) {
+        let bufferToProcess = null;
+
+        if (imageContent instanceof Buffer) {
+            bufferToProcess = imageContent;
+        } else if (typeof imageContent === 'object' && imageContent.url) {
+            try {
+                const response = await fetch(imageContent.url);
+                bufferToProcess = await response.buffer();
+                // Si descargamos la URL, reemplazamos el objeto {url: ...}
+                // con el buffer procesado para que Baileys lo envíe correctamente.
+            } catch (error) {
+                console.error(chalk.bold.red(`[WATERMARK] Fallo la descarga de URL: `), error);
+            }
+        }
+        
+        if (bufferToProcess) {
+            content.image = await aplicarMarcaDeAgua(bufferToProcess);
+        }
     }
     
     return sendMessageOriginal(jid, content, options);
