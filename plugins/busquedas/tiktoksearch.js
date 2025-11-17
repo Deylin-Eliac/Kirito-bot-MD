@@ -11,7 +11,7 @@ async function sendAlbumMessage(conn, jid, medias, options = {}) {
   delete options.caption;
   delete options.delay;
 
-  
+
   const album = baileys.generateWAMessageFromContent(
     jid,
     {
@@ -35,62 +35,82 @@ async function sendAlbumMessage(conn, jid, medias, options = {}) {
 
   await conn.relayMessage(album.key.remoteJid, album.message, { messageId: album.key.id });
 
- 
+
   for (let i = 0; i < medias.length; i++) {
     const { type, data } = medias[i];
-    const msg = await baileys.generateWAMessage(
-      album.key.remoteJid,
-      { [type]: data, ...(i === 0 ? { caption } : {}) },
-      { upload: conn.waUploadToServer }
-    );
-    msg.message.messageContextInfo = {
-      messageAssociation: { associationType: 1, parentMessageKey: album.key },
-    };
-    await conn.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
-    await baileys.delay(delay);
+    const media_url = typeof data.url === 'string' ? data.url : null;
+    
+    if (media_url) {
+      const msg = await baileys.generateWAMessage(
+        album.key.remoteJid,
+        { 
+          [type]: { url: media_url }, 
+          ...(i === 0 ? { caption } : {}) 
+        },
+        { upload: conn.waUploadToServer }
+      );
+      
+      msg.message.messageContextInfo = {
+        messageAssociation: { associationType: 1, parentMessageKey: album.key },
+      };
+      
+      await conn.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id });
+      await baileys.delay(delay);
+    }
   }
 
   return album;
 }
 
+const emoji = '🎥';
+const rcanal = {}; 
+
 let handler = async (m, { conn, text }) => {
- 
+
   const rwait = '🕒';
   const done = '✅';
+  const fkontak = {
+      key: { fromMe: false, participant: m.sender },
+      message: { documentMessage: { title: 'TikTok', fileName: 'TikTok Videos' } }
+  };
 
   if (!text) return conn.reply(m.chat, `${emoji} Por favor, ingrese lo que desea buscar en TikTok.`, m, rcanal);
 
   try {
     await m.react(rwait);
-    conn.reply(m.chat, `${emoji} Descargando videos, espere un momento...`, m, rcanal);
+    conn.reply(m.chat, `${emoji} Buscando videos en TikTok... espere un momento.`, m, rcanal);
 
-    const { data: response } = await axios.get(`https://delirius-apiofc.vercel.app/search/tiktoksearch?query=${encodeURIComponent(text)}`);
-    let searchResults = response.data;
+    const apiUrl = `https://delirius-apiofc.vercel.app/search/tiktoksearch?query=${encodeURIComponent(text)}`;
+    const { data: response } = await axios.get(apiUrl);
+    
+    const searchResults = response.meta;
 
     if (!searchResults || searchResults.length === 0) {
+      await m.react('❌');
       return conn.reply(m.chat, `No se encontraron resultados para "${text}".`, m);
     }
 
     const medias = searchResults.slice(0, 7).map(video => ({
       type: 'video',
-      data: { url: video.nowm }
-    }));
+      data: { url: video.hd }
+    })).filter(media => media.data.url);
 
-    const fkontak = {
-      key: { fromMe: false, participant: m.sender },
-      message: { documentMessage: { title: 'TikTok', fileName: 'TikTok Videos' } }
-    };
+    if (medias.length === 0) {
+        await m.react('❌');
+        return conn.reply(m.chat, `La búsqueda fue exitosa, pero ninguna de las URLs de video encontradas era válida.`, m);
+    }
 
     await sendAlbumMessage(conn, m.chat, medias, {
-      caption: `${emoji} Resultados de: ${text}\nCantidad de resultados: ${medias.length}`,
+      caption: `${emoji} Resultados de TikTok para: **${text}**\n\nSe enviarán ${medias.length} videos.`,
       quoted: fkontak
     });
 
     await m.react(done);
 
   } catch (error) {
-    console.error(error);
-    conn.reply(m.chat, `Error al descargar videos de TikTok.${error.message}`, m);
+    console.error("Error en tiktoksearch:", error);
+    await m.react('❌');
+    conn.reply(m.chat, `Hubo un error al intentar buscar o descargar los videos de TikTok. Por favor, inténtelo de nuevo más tarde.\n\nDetalles del error: ${error.message}`, m);
   }
 };
 
