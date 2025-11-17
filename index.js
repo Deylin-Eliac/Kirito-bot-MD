@@ -32,6 +32,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers } = await import('@whiskeysockets/baileys');
 import readline, { createInterface } from 'readline';
 import NodeCache from 'node-cache';
+import sharp from 'sharp';
 const { CONNECTING } = ws;
 const { chain } = lodash;
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
@@ -164,6 +165,54 @@ const connectionOptions = {
 };
 
 global.conn = makeWASocket(connectionOptions);
+
+const WATERMARK_PATH = path.join(__dirname, 'watermark.png');
+let watermarkBuffer;
+try {
+    if (existsSync(WATERMARK_PATH)) {
+        watermarkBuffer = readFileSync(WATERMARK_PATH);
+        console.log(chalk.bold.green(`\n[WATERMARK] Archivo 'watermark.png' cargado con éxito.`));
+    } else {
+        console.log(chalk.bold.red(`\n[WATERMARK ERROR] ¡ATENCIÓN! Falta el archivo 'watermark.png' en la raíz.`));
+    }
+} catch (e) {
+    console.error(chalk.bold.red(`[WATERMARK ERROR] Error al leer watermark.png:`), e);
+}
+
+async function aplicarMarcaDeAgua(inputImageBuffer) {
+    if (!watermarkBuffer) return inputImageBuffer;
+    
+    try {
+        const outputBuffer = await sharp(inputImageBuffer)
+            .composite([{
+                input: watermarkBuffer,
+                gravity: sharp.gravity.northwest,
+            }])
+            .toBuffer();
+        
+        return outputBuffer;
+    } catch (error) {
+        console.error(chalk.bold.red(`[WATERMARK ERROR] Fallo Sharp al aplicar marca de agua:`), error);
+        return inputImageBuffer;
+    }
+}
+
+const sendMessageOriginal = conn.sendMessage;
+
+conn.sendMessage = async (jid, content, options = {}) => {
+    
+    if (content && content.image instanceof Buffer) {
+        
+        const imagenFinalBuffer = await aplicarMarcaDeAgua(content.image);
+
+        content.image = imagenFinalBuffer;
+    }
+    
+    return sendMessageOriginal(jid, content, options);
+};
+
+console.log(chalk.bold.cyan("✅ [WATERMARK] La función 'conn.sendMessage' ha sido modificada para marcar todas las imágenes."));
+
 if (!existsSync(`./${sessions}/creds.json`)) {
   if (opcion === '2' || methodCode) {
     opcion = '2';
