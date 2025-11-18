@@ -7,7 +7,8 @@ let handler = async (m, { conn, args, text }) => {
         who = m.mentionedJid[0];
     } else if (text) {
         let cleanedText = text.replace(/[^0-9]/g, '');
-        if (cleanedText.length >= 8) {
+        
+        if (cleanedText.length >= 9) {
             who = cleanedText + '@s.whatsapp.net';
         }
     }
@@ -19,6 +20,7 @@ let handler = async (m, { conn, args, text }) => {
     try {
         let name = await conn.getName(who);
         let pp;
+        
         try {
             pp = await conn.profilePictureUrl(who, 'image');
         } catch {
@@ -27,7 +29,7 @@ let handler = async (m, { conn, args, text }) => {
         
         await conn.sendFile(m.chat, pp, 'profile.jpg', `*Foto de perfil de: »* ${name}`, m);
     } catch (e) {
-        await m.reply('❌ No se pudo obtener la foto de perfil.');
+        await m.reply('❌ No se pudo obtener la foto de perfil. Verifica que el número sea correcto, esté en WhatsApp y que el bot tenga acceso a la foto.');
     }
 };
 
