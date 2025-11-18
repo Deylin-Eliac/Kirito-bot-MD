@@ -1,4 +1,4 @@
-Let handler = async (m, { conn, args, text }) => {
+let handler = async (m, { conn, args, text }) => {
     let who;
 
     if (m.quoted) {
